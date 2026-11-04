@@ -1,0 +1,1793 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="description" content="Mira cómo 3 agentes de IA atienden tu WhatsApp, agendan citas y hacen seguimiento. Pruébalo tú mismo.">
+<meta name="theme-color" content="#0D0F12">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:site_name" content="Vaniet IA">
+<meta property="og:title" content="Vaniet IA · Demo interactiva">
+<meta property="og:description" content="Mira cómo 3 agentes de IA atienden tu WhatsApp, agendan citas y hacen seguimiento. Pruébalo tú mismo.">
+<meta property="og:url" content="https://vaniet.vercel.app/">
+<meta property="og:image" content="https://vaniet.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://vaniet.vercel.app/og.png">
+</head>
+<body>
+<title>Demo Vaniet IA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* Vaniet IA · identidad: Deep Obsidian (#0D0F12), Electric Cobalt (#2563EB) y blanco.
+   Arriba, un "centro de control" oscuro con la línea de tiempo y la explicación de cada paso;
+   abajo, el espacio de trabajo claro: WhatsApp a la izquierda y lo que pasa detrás a la derecha.
+   Look único a propósito (el teléfono imita WhatsApp y las tarjetas Google Workspace). */
+:root {
+  --obsidiana: #0D0F12;
+  --obsidiana-2: #15181D;
+  --obsidiana-3: #1E2228;
+  --linea-osc: rgba(255, 255, 255, .09);
+  --texto-osc: #E7EAEE;
+  --suave-osc: #8B93A1;
+  --cobalto: #2563EB;
+  --cobalto-claro: #60A5FA;
+  --cobalto-suave: #EEF3FE;
+  --tinta: #0D0F12;
+  --texto: #2A2F37;
+  --suave: #6B7280;
+  --borde: #E6E8EC;
+  --fondo: #F5F6F8;
+  --tarjeta: #FFFFFF;
+  --a1: #2563EB;
+  --a2: #7C3AED;
+  --a3: #EA580C;
+  --ok: #16A34A;
+  --wa-verde: #075e54;
+  --wa-claro: #d9fdd3;
+  --wa-fondo: #efeae2;
+  --wa-boton: #00a884;
+  --fuente: "Geist", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --pulgar: 20px;
+  --radio: 16px;
+  --sombra: 0 1px 2px rgba(13, 15, 18, .04), 0 4px 16px rgba(13, 15, 18, .05);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; font-family: var(--fuente); background: var(--fondo); color: var(--texto); font-size: 14px; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--obsidiana); }
+button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid var(--cobalto-claro); outline-offset: 2px; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); }
+
+/* ---------- Centro de control (oscuro) ---------- */
+.control {
+  color: var(--texto-osc);
+  background:
+    radial-gradient(900px 320px at 85% -10%, rgba(37, 99, 235, .28), transparent 70%),
+    radial-gradient(600px 260px at 0% 0%, rgba(96, 165, 250, .10), transparent 70%),
+    var(--obsidiana);
+  position: relative;
+  border-bottom: 1px solid var(--linea-osc);
+}
+.control::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: linear-gradient(var(--linea-osc) 1px, transparent 1px), linear-gradient(90deg, var(--linea-osc) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 85%); mask-image: linear-gradient(to bottom, #000 0%, transparent 85%);
+}
+.control > * { position: relative; }
+
+.barra-in { display: flex; align-items: center; gap: 12px 20px; flex-wrap: wrap; padding-block: 16px; max-width: 1600px; margin: 0 auto; border-bottom: 1px solid var(--linea-osc); }
+.marca { display: flex; align-items: center; gap: 12px; }
+.logo { width: 38px; height: 38px; flex: none; display: block; }
+.marca-nombre { font-weight: 700; font-size: 18px; letter-spacing: -.03em; color: #fff; display: flex; align-items: center; gap: 7px; }
+.marca-nombre .ai { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .06em; color: var(--cobalto-claro); border: 1px solid rgba(96, 165, 250, .4); border-radius: 5px; padding: 1px 5px; }
+.marca-sub { font-size: 12px; color: var(--suave-osc); }
+.marca-sub b { color: #fff; font-weight: 600; }
+.en-vivo { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #86efac; }
+.en-vivo::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 3px rgba(34, 197, 94, .2); animation: latido 2s infinite; }
+
+.controles { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.modo { display: inline-flex; border-radius: 9px; overflow: hidden; border: 1px solid var(--linea-osc); background: rgba(255,255,255,.03); }
+.modo button { font: inherit; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .06em; border: 0; padding: 8px 11px; cursor: pointer; background: transparent; color: var(--suave-osc); }
+.modo button[aria-pressed="true"].guion { background: rgba(255,255,255,.1); color: #fff; }
+.modo button[aria-pressed="true"].ia { background: rgba(34, 197, 94, .18); color: #86efac; }
+
+.btn {
+  font: inherit; font-weight: 500; font-size: 13px; cursor: pointer;
+  border: 1px solid var(--linea-osc); background: rgba(255,255,255,.04); color: var(--texto-osc);
+  padding: 8px 13px; border-radius: 9px; transition: background .2s, border-color .2s, transform .1s;
+}
+.btn:hover { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.18); }
+.btn:active { transform: scale(.97); }
+.btn.peligro { background: #b91c1c; border-color: transparent; color: #fff; }
+
+/* Línea de tiempo + explicación */
+.linea-in { max-width: 1600px; margin: 0 auto; padding-block: 20px 24px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px 32px; align-items: stretch; }
+@media (max-width: 1000px) { .linea-in { grid-template-columns: minmax(0, 1fr); } }
+.tl { display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+.tl-etq { font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--suave-osc); margin-bottom: 10px; }
+.tl-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.play {
+  width: 46px; height: 46px; border-radius: 50%; border: 0; cursor: pointer; flex: none;
+  background: var(--cobalto); color: #fff; font-size: 15px;
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, .18), 0 8px 24px rgba(37, 99, 235, .45);
+  transition: transform .15s, box-shadow .2s;
+}
+.play:hover { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(37, 99, 235, .22), 0 8px 28px rgba(37, 99, 235, .55); }
+.paso-btn { font: inherit; font-size: 13px; font-weight: 500; border: 1px solid var(--linea-osc); background: rgba(255,255,255,.04); color: var(--texto-osc); border-radius: 9px; padding: 8px 12px; cursor: pointer; }
+.paso-btn:hover:not(:disabled) { background: rgba(255,255,255,.09); }
+.paso-btn:disabled { opacity: .35; cursor: not-allowed; }
+.reloj-grande { margin-left: auto; text-align: right; }
+.reloj-grande .h { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap-reverse; }
+.reloj-grande .hora-n { font-family: var(--mono); font-size: 26px; font-weight: 600; color: #fff; letter-spacing: -.03em; }
+.reloj-grande .d { font-size: 12px; color: var(--suave-osc); margin-top: 2px; }
+.reloj-grande .d::first-letter { text-transform: uppercase; }
+.equipo { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+.equipo::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.equipo.fuera { background: rgba(255,255,255,.07); color: #c4b5fd; border: 1px solid rgba(196, 181, 253, .25); }
+.equipo.dentro { background: rgba(34, 197, 94, .12); color: #86efac; border: 1px solid rgba(134, 239, 172, .25); }
+
+.pista { position: relative; padding-top: 32px; padding-bottom: 22px; }
+.pista input[type="range"] { width: 100%; margin: 0; height: var(--pulgar); background: transparent; -webkit-appearance: none; appearance: none; cursor: pointer; position: relative; z-index: 2; }
+.pista input[type="range"]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(to right, var(--cobalto-claro), var(--cobalto) var(--avance, 0%), rgba(255,255,255,.12) var(--avance, 0%)); }
+.pista input[type="range"]::-moz-range-track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.12); }
+.pista input[type="range"]::-moz-range-progress { height: 6px; border-radius: 3px; background: var(--cobalto); }
+.pista input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: var(--pulgar); height: var(--pulgar); border-radius: 50%; background: #fff; border: 0; margin-top: -7px; box-shadow: 0 0 0 5px rgba(37, 99, 235, .45), 0 2px 10px rgba(0,0,0,.5); }
+.pista input[type="range"]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 5px rgba(37, 99, 235, .45), 0 2px 10px rgba(0,0,0,.5); }
+.marcas, .dias { position: absolute; left: calc(var(--pulgar) / 2); right: calc(var(--pulgar) / 2); pointer-events: none; }
+.marcas { top: 0; height: 26px; }
+.dias { bottom: 0; height: 18px; }
+.marca-t {
+  position: absolute; top: 0; transform: translateX(-50%); pointer-events: auto; cursor: pointer;
+  width: 22px; height: 22px; border-radius: 7px; border: 1px solid rgba(255,255,255,.18); display: grid; place-items: center;
+  font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: #fff; padding: 0; transition: transform .15s, opacity .2s;
+}
+.marca-t:hover { transform: translateX(-50%) translateY(-2px); }
+.marca-t.a0 { background: #3a404a; } .marca-t.a1 { background: var(--a1); } .marca-t.a2 { background: var(--a2); } .marca-t.a3 { background: var(--a3); } .marca-t.fin { background: var(--ok); }
+.marca-t.cron { width: 18px; height: 18px; top: 2px; border-radius: 6px; font-size: 9.5px; }
+.marca-t.u { width: 10px; height: 10px; top: 37px; border-radius: 50%; background: var(--wa-boton); border: 2px solid var(--obsidiana); z-index: 3; pointer-events: none; }
+.marca-t.pasada { opacity: .45; }
+.dia-t { position: absolute; top: 0; font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--suave-osc); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; border-left: 1px solid rgba(255,255,255,.18); padding-left: 5px; }
+.tl-ayuda { font-size: 12px; color: var(--suave-osc); line-height: 1.5; }
+.tl-ayuda .k-verde { color: #4ade80; font-weight: 600; } .tl-ayuda .k-naranja { color: #fb923c; font-weight: 600; }
+
+.relato { background: var(--tarjeta); color: var(--texto); border-radius: var(--radio); padding: 18px 20px; min-height: 170px; box-shadow: 0 20px 50px rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.6); }
+.relato-cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.paso-n { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: .06em; }
+.agente-pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px; color: #fff; }
+.agente-pill.a0 { background: #3a404a; } .agente-pill.a1 { background: var(--a1); } .agente-pill.a2 { background: var(--a2); } .agente-pill.a3 { background: var(--a3); } .agente-pill.fin { background: var(--ok); }
+.agente-pill.vivo { background: var(--wa-boton); }
+.relato h2 { margin: 0 0 6px; font-size: 19px; font-weight: 700; letter-spacing: -.025em; color: var(--tinta); text-wrap: balance; }
+.relato p { margin: 0; line-height: 1.6; color: var(--texto); max-width: 65ch; }
+.beneficio { margin-top: 12px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; font-size: 13px; background: var(--cobalto-suave); color: #1e3a8a; border-left: 3px solid var(--cobalto); padding: 8px 12px; border-radius: 0 8px 8px 0; }
+.beneficio b { white-space: nowrap; font-weight: 600; }
+.relato .cta-btn { margin-top: 14px; font: inherit; font-weight: 600; border: 0; border-radius: 10px; padding: 11px 18px; cursor: pointer; color: #fff; background: var(--obsidiana); }
+.relato .cta-btn:hover { background: var(--cobalto); }
+.acciones { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+.acciones li { font-size: 12.5px; padding: 7px 10px; border-radius: 8px; line-height: 1.4; }
+.acciones .ag { font-weight: 600; }
+.acciones .a1 { background: #eff6ff; } .acciones .a1 .ag { color: var(--a1); }
+.acciones .a2 { background: #f5f3ff; } .acciones .a2 .ag { color: var(--a2); }
+.acciones .a3 { background: #fff7ed; } .acciones .a3 .ag { color: var(--a3); }
+.acciones .sis { background: #f8fafc; } .acciones .sis .ag { color: var(--suave); }
+.relato .extra { margin-top: 8px; font-size: 13px; color: #15803d; }
+
+/* ---------- Espacio de trabajo (claro) ---------- */
+.layout { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 28px; padding-block: 28px; max-width: 1600px; margin: 0 auto; }
+@media (max-width: 1000px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.etq { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--suave); text-transform: uppercase; letter-spacing: .1em; }
+
+/* Teléfono / WhatsApp */
+.col-telefono { min-width: 0; }
+.chats { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.chats .lbl { width: 100%; margin-bottom: 2px; }
+.chip { font: inherit; font-size: 12.5px; font-weight: 500; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); border-radius: 999px; padding: 6px 12px; cursor: pointer; transition: border-color .2s; }
+.chip:hover { border-color: #c9ced6; }
+.chip small { font-weight: 400; color: var(--suave); }
+.chip[aria-selected="true"] { background: var(--obsidiana); color: #fff; border-color: var(--obsidiana); }
+.chip[aria-selected="true"] small { color: #9ca3af; }
+.chip.tu { border-color: var(--wa-boton); color: #047857; font-weight: 600; }
+.chip.tu[aria-selected="true"] { background: var(--wa-boton); color: #fff; }
+
+.telefono {
+  height: 660px; max-height: 80vh; min-height: 480px; display: flex; flex-direction: column;
+  border-radius: 40px; overflow: hidden; background: #000; position: relative;
+  border: 11px solid var(--obsidiana); outline: 1px solid #2b3038;
+  box-shadow: 0 30px 70px rgba(13, 15, 18, .28), 0 0 0 1px rgba(13,15,18,.06);
+}
+.telefono::before { content: ""; position: absolute; top: 7px; left: 50%; transform: translateX(-50%); width: 92px; height: 22px; border-radius: 14px; background: var(--obsidiana); z-index: 2; }
+@media (max-width: 480px) { .telefono { border-width: 7px; border-radius: 28px; } .telefono::before { width: 70px; height: 18px; top: 5px; } }
+.wa-header { display: flex; align-items: center; gap: 10px; background: var(--wa-verde); color: #fff; padding: 36px 14px 11px; }
+.wa-avatar { width: 38px; height: 38px; border-radius: 50%; flex: none; display: block; }
+.wa-nombre { font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.verificado { width: 14px; height: 14px; flex: none; }
+.wa-estado { font-size: 11.5px; color: #d1fae5; }
+.wa-iconos { margin-left: auto; display: flex; gap: 16px; color: #d1fae5; }
+.wa-iconos svg { width: 18px; height: 18px; }
+.wa-chat {
+  flex: 1; overflow-y: auto; padding: 14px 10px; display: flex; flex-direction: column; gap: 6px;
+  background-color: var(--wa-fondo);
+  background-image: radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+.burbuja {
+  max-width: 82%; padding: 7px 10px 18px; border-radius: 9px; position: relative;
+  line-height: 1.42; font-size: 13.5px; box-shadow: 0 1px 1px rgba(0,0,0,.08); color: #111b21;
+  overflow-wrap: anywhere; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.burbuja.nueva { animation: entra .25s ease-out; }
+.burbuja .hora { position: absolute; right: 8px; bottom: 3px; font-size: 10px; color: #667781; }
+.burbuja.cliente { align-self: flex-end; background: var(--wa-claro); border-top-right-radius: 2px; }
+.burbuja.bot { align-self: flex-start; background: #fff; border-top-left-radius: 2px; }
+.burbuja.seguimiento { border-left: 3px solid var(--a3); }
+.burbuja .etiqueta { display: block; font-size: 10px; font-weight: 700; color: var(--a3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: .04em; }
+.burbuja .etiqueta.ia { color: #047857; }
+.burbuja .meet { color: #027eb5; }
+.dia-sep { align-self: center; font-size: 11px; background: #fff; color: #54656f; padding: 4px 10px; border-radius: 7px; margin: 6px 0; box-shadow: 0 1px 1px rgba(0,0,0,.06); }
+.dia-sep::first-letter { text-transform: uppercase; }
+.escribiendo { align-self: flex-start; background: #fff; padding: 10px 14px; border-radius: 9px; display: flex; gap: 4px; align-items: center; color: #54656f; font-size: 12px; }
+.escribiendo span { width: 7px; height: 7px; border-radius: 50%; background: #9aa5ad; animation: rebote 1.2s infinite; }
+.escribiendo span:nth-child(2) { animation-delay: .15s; } .escribiendo span:nth-child(3) { animation-delay: .3s; }
+.vacio-chat { margin: auto; text-align: center; color: #54656f; font-size: 12.5px; background: #fff8c4; padding: 10px 14px; border-radius: 9px; max-width: 86%; line-height: 1.5; }
+
+.wa-input { display: flex; gap: 8px; padding: 8px 8px 12px; background: #f0f2f5; }
+.wa-input input { flex: 1; min-width: 0; border: none; border-radius: 22px; padding: 11px 15px; font: inherit; outline: none; background: #fff; color: #111b21; transition: box-shadow .2s; }
+.wa-input input:disabled { background: #e9edef; color: #667781; }
+.wa-input button { width: 42px; height: 42px; flex: none; border-radius: 50%; border: none; background: var(--wa-boton); color: #fff; cursor: pointer; display: grid; place-items: center; }
+.wa-input button svg { width: 18px; height: 18px; }
+.wa-input button:disabled { background: #9aa5ad; cursor: not-allowed; }
+.wa-input.invita input { box-shadow: 0 0 0 2px var(--wa-boton); animation: invita 2.4s ease-in-out infinite; }
+
+.sugerencias { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.sugerencias button {
+  font: inherit; font-size: 12.5px; cursor: pointer; border: 1px solid #d6e2fb; color: #1d4ed8;
+  background: var(--cobalto-suave); padding: 7px 11px; border-radius: 999px; text-align: left; transition: background .15s, border-color .15s;
+}
+.sugerencias button:hover { background: #dfe9fd; border-color: #b9cdf8; }
+.sugerencias .titulo { width: 100%; margin-bottom: 2px; }
+.nota-ia { margin-top: 10px; font-size: 12px; color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 8px 10px; border-radius: 10px; line-height: 1.45; }
+
+/* Reto: probar los 3 agentes */
+.misiones { margin-top: 16px; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 16px 18px; box-shadow: var(--sombra); }
+.mis-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.mis-cab b { color: var(--tinta); font-size: 14px; font-weight: 600; letter-spacing: -.01em; }
+.mis-n { font-family: var(--mono); font-size: 11.5px; color: var(--suave); }
+.progreso { height: 5px; background: #eceef1; border-radius: 3px; margin: 10px 0 6px; overflow: hidden; }
+.progreso span { display: block; height: 100%; background: linear-gradient(90deg, var(--cobalto-claro), var(--cobalto)); transition: width .4s; }
+.mision { display: flex; gap: 11px; padding: 10px 0; border-top: 1px solid #f1f2f4; }
+.mision:first-of-type { border-top: 0; }
+.mision .chk { width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid #cfd4db; display: grid; place-items: center; flex: none; font-size: 12px; font-weight: 700; color: #fff; }
+.mision.plegada { padding: 7px 0; }
+.mision.hecha .chk { background: var(--ok); border-color: var(--ok); }
+.mision.hecha .mt { color: var(--suave); text-decoration: line-through; }
+.mt { font-weight: 600; color: var(--tinta); font-size: 13px; }
+.md { font-size: 12px; color: var(--suave); line-height: 1.45; margin-top: 1px; }
+.ag-tag { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: #fff; border-radius: 4px; padding: 1px 5px; margin-right: 6px; vertical-align: 1px; }
+.ag-tag.a1 { background: var(--a1); } .ag-tag.a2 { background: var(--a2); } .ag-tag.a3 { background: var(--a3); }
+.mision .accion { margin-top: 8px; font: inherit; font-size: 12px; font-weight: 600; border: 0; border-radius: 8px; padding: 8px 12px; cursor: pointer; color: #fff; background: var(--obsidiana); }
+.mision .accion:hover { background: var(--cobalto); }
+.mis-fin { margin-top: 10px; background: #f0fdf4; border: 1px solid #bbf7d0; color: #14532d; border-radius: 10px; padding: 11px 13px; font-size: 13px; line-height: 1.5; }
+.mis-fin a { color: #15803d; font-weight: 600; }
+
+/* Panel derecho */
+.col-panel { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); box-shadow: var(--sombra); overflow: hidden; }
+@media (max-width: 700px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi:nth-child(2) { border-right: 0; } .kpi:nth-child(-n+2) { border-bottom: 1px solid var(--borde); } }
+.kpi { padding: 13px 16px; border-right: 1px solid var(--borde); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.kpi:last-child { border-right: 0; }
+.kpi-num { font-family: var(--mono); font-size: 24px; font-weight: 600; color: var(--tinta); letter-spacing: -.04em; line-height: 1; transition: color .3s; }
+.kpi-num.cambio { color: var(--cobalto); }
+.kpi-txt { font-size: 11.5px; color: var(--suave); line-height: 1.3; flex: 1 1 70px; }
+
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden; min-width: 0; box-shadow: var(--sombra); }
+.tarjeta-titulo { display: flex; align-items: center; gap: 9px; padding: 13px 18px; font-weight: 600; border-bottom: 1px solid var(--borde); color: var(--tinta); flex-wrap: wrap; letter-spacing: -.01em; }
+.tarjeta-titulo .sub { margin-left: auto; font-weight: 400; font-size: 12px; color: var(--suave); }
+.icono { width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; flex: none; }
+.icono svg { width: 14px; height: 14px; }
+.icono.sheets { background: #0f9d58; } .icono.cal { background: #1a73e8; } .icono.rayo { background: var(--obsidiana); }
+
+.tabla-wrap { overflow-x: auto; }
+.tabla { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tabla th { text-align: left; font-family: var(--mono); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--suave); background: #fafbfc; padding: 9px 14px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+.tabla td { padding: 10px 14px; border-bottom: 1px solid #f1f2f4; white-space: nowrap; }
+.tabla td:nth-child(2) { font-family: var(--mono); font-size: 12px; color: var(--suave); }
+.tabla tbody tr { cursor: pointer; transition: background .15s; }
+.tabla tbody tr:hover { background: #fafbfc; }
+.tabla tr.activa { background: var(--cobalto-suave); }
+.tabla tr.flash td { animation: flash 2s ease-out; }
+.tabla .nombre { font-weight: 600; color: var(--tinta); }
+.tabla .vacio { color: #a3a9b3; }
+.estado { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 6px; }
+.estado.Nuevo { background: #f1f2f4; color: #4b5563; }
+.estado.Calificado { background: #dbeafe; color: #1d4ed8; }
+.estado.Cotizado { background: #fef3c7; color: #b45309; }
+.estado.Agendado { background: #dcfce7; color: #15803d; }
+.estado.Escalado { background: #fee2e2; color: #b91c1c; }
+.estado.Seguimiento { background: #ffedd5; color: #c2410c; }
+
+/* Un solo panel con pestañas: muestra el sistema donde acaba de actuar un agente */
+.col-panel { position: sticky; top: 16px; align-self: start; }
+@media (max-width: 1000px) { .col-panel { position: static; } }
+.panel { display: flex; flex-direction: column; }
+.pestanas { display: flex; align-items: center; gap: 4px; padding: 8px 10px 0; border-bottom: 1px solid var(--borde); flex-wrap: wrap; }
+.pestanas button { font: inherit; font-size: 13px; font-weight: 600; color: var(--suave); background: none; border: 0; border-bottom: 2px solid transparent; padding: 9px 10px 11px; margin-bottom: -1px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; position: relative; transition: color .15s; }
+.pestanas button:hover { color: var(--tinta); }
+.pestanas button[aria-selected="true"] { color: var(--tinta); border-bottom-color: var(--cobalto); }
+.pestanas .icono { width: 20px; height: 20px; border-radius: 6px; font-size: 9.5px; }
+.pestanas .icono svg { width: 12px; height: 12px; }
+.pestanas .punto { width: 7px; height: 7px; border-radius: 50%; background: var(--cobalto); display: none; }
+.pestanas button.aviso .punto { display: block; animation: latido 1.4s infinite; }
+.pestanas .sub { margin-left: auto; font-size: 12px; color: var(--suave); padding: 0 6px 6px; }
+.vista { height: 360px; overflow: auto; }
+.vista .calendario, .vista .actividad { max-height: none; }
+@media (max-width: 1000px) { .vista { height: 320px; } }
+.dos-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 1250px) { .dos-col { grid-template-columns: minmax(0, 1fr); } }
+
+.calendario { padding: 8px 18px 16px; max-height: 340px; overflow-y: auto; }
+.cal-dia { font-family: var(--mono); font-size: 10.5px; font-weight: 600; text-transform: uppercase; color: var(--suave); letter-spacing: .07em; margin: 12px 0 7px; }
+.evento { display: flex; gap: 12px; padding: 10px 12px; border-radius: 10px; background: #f7f9fc; margin-bottom: 7px; border-left: 3px solid #1a73e8; }
+.evento.interno { border-left-color: #a3a9b3; background: #fafbfc; }
+.evento.nuevo { animation: flash 2.5s ease-out; }
+.evento .h { font-family: var(--mono); font-weight: 600; min-width: 84px; white-space: nowrap; color: var(--tinta); font-size: 12.5px; }
+.evento .t { font-weight: 600; font-size: 13px; color: var(--tinta); }
+.evento .d { font-size: 12px; color: var(--suave); overflow-wrap: anywhere; }
+.evento .meet { font-size: 12px; color: #1a73e8; font-family: var(--mono); }
+
+.actividad { padding: 10px 14px 14px; max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.act { display: flex; gap: 10px; font-size: 12.5px; padding: 7px 9px; border-radius: 8px; color: var(--texto); line-height: 1.4; }
+.act.nueva { animation: entra .25s ease-out; }
+.act .ts { color: var(--suave); font-family: var(--mono); min-width: 74px; white-space: nowrap; font-size: 11px; padding-top: 1px; }
+.act .ag { font-weight: 600; white-space: nowrap; }
+.act.a1 .ag { color: var(--a1); } .act.a2 .ag { color: var(--a2); } .act.a3 .ag { color: var(--a3); } .act.sis .ag { color: var(--suave); }
+.act.a1 { background: #f5f8ff; } .act.a2 { background: #f8f6ff; } .act.a3 { background: #fff8f1; } .act.sis { background: #fafbfc; }
+.act.error { background: #fef2f2; }
+
+/* Cierre */
+.cta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; position: relative; overflow: hidden;
+  background: radial-gradient(500px 200px at 100% 0%, rgba(37, 99, 235, .35), transparent 70%), var(--obsidiana);
+  color: var(--texto-osc); border-radius: var(--radio); padding: 22px 24px;
+}
+.cta-txt { flex: 1 1 260px; }
+.cta-txt b { display: block; color: #fff; font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+.cta-txt span { font-size: 13px; color: var(--suave-osc); }
+.cta .num { font-family: var(--mono); font-size: 12.5px; color: var(--suave-osc); user-select: all; }
+.cta .sub { color: #6b7380; font-size: 11.5px; width: 100%; }
+.wa-link { display: inline-flex; align-items: center; gap: 8px; background: #fff; color: var(--obsidiana); text-decoration: none; font-weight: 600; padding: 11px 16px; border-radius: 10px; transition: transform .15s; }
+.wa-link:hover { transform: translateY(-1px); }
+.wa-link svg { width: 18px; height: 18px; color: var(--wa-boton); }
+
+.pie { max-width: 1600px; margin: 0 auto; padding-block: 8px 28px; display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; font-size: 12px; color: var(--suave); }
+.pie b { color: var(--tinta); font-weight: 600; }
+
+/* Bienvenida */
+.intro { position: fixed; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px; background: rgba(13, 15, 18, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.intro-caja {
+  width: 100%; max-width: 580px; max-height: calc(100vh - 32px); overflow: auto; padding: 28px; border-radius: 20px;
+  color: var(--texto-osc); border: 1px solid var(--linea-osc);
+  background: radial-gradient(500px 220px at 100% 0%, rgba(37, 99, 235, .3), transparent 70%), var(--obsidiana-2);
+  box-shadow: 0 40px 100px rgba(0,0,0,.5);
+}
+.intro-marca { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.intro-marca .logo { width: 32px; height: 32px; }
+.intro-saludo { font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--cobalto-claro); text-transform: uppercase; letter-spacing: .1em; }
+.intro h2 { margin: 6px 0 18px; font-size: 25px; font-weight: 700; letter-spacing: -.035em; color: #fff; text-wrap: balance; line-height: 1.2; }
+.intro ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.intro li { display: flex; gap: 13px; line-height: 1.55; color: #c3c9d2; font-size: 14px; }
+.intro li b { color: #fff; font-weight: 600; }
+.intro li .n { width: 32px; height: 32px; border-radius: 9px; flex: none; display: grid; place-items: center; font-family: var(--mono); font-size: 12px; font-weight: 600; background: rgba(37, 99, 235, .16); color: var(--cobalto-claro); border: 1px solid rgba(96, 165, 250, .25); }
+.intro-botones { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.intro-botones button { font: inherit; font-weight: 600; border-radius: 10px; padding: 12px 18px; cursor: pointer; transition: transform .15s; }
+.intro-botones button:hover { transform: translateY(-1px); }
+.intro .principal { border: 0; color: #fff; background: var(--cobalto); box-shadow: 0 8px 24px rgba(37, 99, 235, .45); }
+.intro .secundario { border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.04); color: #fff; }
+.intro-nota { margin: 16px 0 0; font-size: 12px; color: var(--suave-osc); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%) translateY(20px);
+  background: var(--obsidiana); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 500; border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 16px 40px rgba(13,15,18,.35);
+  opacity: 0; pointer-events: none; transition: all .3s; z-index: 20; max-width: calc(100vw - 32px);
+}
+.toast.ver { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Modo presentación: solo teléfono, línea de tiempo y panel */
+.presenta .misiones, .presenta .sugerencias, .presenta .tl-ayuda, .presenta .nota-ia, .presenta #btnAyuda { display: none !important; }
+.btn[aria-pressed="true"] { background: var(--cobalto); border-color: var(--cobalto); color: #fff; }
+
+/* Marca de agua sutil en el chat y entrada escalonada */
+.wa-chat { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M11 12.5 20 28l9-15.5' fill='none' stroke='%23000' stroke-opacity='.045' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='29' cy='12.5' r='2.6' fill='%23000' fill-opacity='.045'/%3E%3C/svg%3E"), radial-gradient(rgba(0,0,0,.035) 1px, transparent 1px); background-size: 170px 170px, 14px 14px; background-position: center, 0 0; background-repeat: no-repeat, repeat; }
+.burbuja.nueva { animation: entra .3s ease-out backwards; }
+.vista:not([hidden]) { animation: entra .22s ease-out; }
+@keyframes entra { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes rebote { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-4px); opacity: 1; } }
+@keyframes flash { 0% { background: #dbe7fe; } 100% { background: transparent; } }
+@keyframes latido { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+@keyframes invita { 0%, 100% { box-shadow: 0 0 0 2px var(--wa-boton); } 50% { box-shadow: 0 0 0 5px rgba(0, 168, 132, .25); } }
+@media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="vaniet-v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#93C5FD"/><stop offset="1" stop-color="#2563EB"/></linearGradient>
+    <symbol id="logo-vaniet" viewBox="0 0 40 40">
+      <rect x=".5" y=".5" width="39" height="39" rx="11" fill="#15181D" stroke="rgba(255,255,255,.14)"/>
+      <path d="M11 12.5 20 28l9-15.5" fill="none" stroke="url(#vaniet-v)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="29" cy="12.5" r="2.6" fill="#fff"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="control">
+<header class="barra">
+  <div class="barra-in gutter">
+    <div class="marca">
+      <svg class="logo" aria-hidden="true"><use href="#logo-vaniet"/></svg>
+      <div>
+        <div class="marca-nombre">Vaniet <span class="ai">IA</span></div>
+        <div class="marca-sub" id="marcaSub">Agentes de IA para WhatsApp · Demo en vivo</div>
+      </div>
+    </div>
+    <div class="controles">
+      <span class="en-vivo">En vivo</span>
+      <div class="modo" id="modo" hidden role="group" aria-label="Modo de respuesta">
+        <button type="button" class="guion" id="modoGuion" aria-pressed="true" title="Respuestas guiadas, instantáneas">GUION</button>
+        <button type="button" class="ia" id="modoIA" aria-pressed="false" title="Conversación libre con Claude">IA REAL</button>
+      </div>
+      <button type="button" class="btn" id="btnPresenta" aria-pressed="false" title="Pantalla limpia para reuniones y grabaciones">Modo presentación</button>
+      <button type="button" class="btn" id="btnAyuda">¿Cómo funciona?</button>
+      <button type="button" class="btn" id="btnReiniciar" title="Vuelve al inicio">↺ Reiniciar</button>
+    </div>
+  </div>
+</header>
+
+<section class="linea" aria-label="Línea de tiempo">
+  <div class="linea-in gutter">
+    <div class="tl">
+      <div class="tl-etq">Línea de tiempo · 3 días de operación</div>
+      <div class="tl-cab">
+        <button type="button" class="play" id="btnPlay" aria-label="Reproducir">▶</button>
+        <button type="button" class="paso-btn" id="btnAnterior" aria-label="Paso anterior">‹ Anterior</button>
+        <button type="button" class="paso-btn" id="btnSiguiente" aria-label="Paso siguiente">Siguiente ›</button>
+        <div class="reloj-grande" aria-live="polite">
+          <div class="h"><span class="equipo" id="equipo"></span><span class="hora-n" id="relojHora">—</span></div>
+          <div class="d" id="relojDia">—</div>
+        </div>
+      </div>
+      <div class="pista">
+        <div class="marcas" id="marcas"></div>
+        <input type="range" id="tiempo" min="0" max="100" step="1" value="0" aria-label="Línea de tiempo">
+        <div class="dias" id="dias"></div>
+      </div>
+      <div class="tl-ayuda" id="tlAyuda"></div>
+    </div>
+    <article class="relato" id="relato" aria-live="polite"></article>
+  </div>
+</section>
+</div>
+
+<main class="layout gutter">
+  <section class="col-telefono" aria-label="Chat de WhatsApp">
+    <div class="chats" id="chats" role="tablist" aria-label="Chats de WhatsApp"></div>
+
+    <div class="telefono">
+      <div class="wa-header">
+        <svg class="wa-avatar" aria-hidden="true"><use href="#logo-vaniet"/></svg>
+        <div>
+          <div class="wa-nombre">Vaniet IA
+            <svg class="verificado" viewBox="0 0 24 24" aria-label="Cuenta de empresa verificada"><path fill="#25D366" d="m12 1 2.6 2.1 3.3-.4 1 3.2 2.9 1.6-.9 3.2 1.4 3-2.6 2.1-.2 3.4-3.3.5L14.6 23 12 21.4 9.4 23l-1.6-2.9-3.3-.5-.2-3.4-2.6-2.1 1.4-3-.9-3.2 2.9-1.6 1-3.2 3.3.4z"/><path d="m7.5 12.2 3 3 6-6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="wa-estado" id="waEstado">en línea</div>
+        </div>
+        <div class="wa-iconos" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+        </div>
+      </div>
+      <div class="wa-chat" id="chat"></div>
+      <form class="wa-input" id="form">
+        <input id="entrada" autocomplete="off" placeholder="Escribe un mensaje" aria-label="Mensaje">
+        <button type="submit" id="btnEnviar" aria-label="Enviar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button>
+      </form>
+    </div>
+
+    <div class="sugerencias" id="sugerencias"></div>
+    <div class="nota-ia" id="notaIA" hidden>Modo IA real: Claude responde libremente y usa las mismas herramientas (CRM, calendario, escalar a un asesor). Cada respuesta tarda unos segundos.</div>
+    <div class="misiones" id="misiones" aria-live="polite"></div>
+  </section>
+
+  <section class="col-panel" aria-label="Lo que hacen los agentes">
+    <div class="etq">Lo que pasa detrás, en tiempo real</div>
+    <div class="kpis">
+      <div class="kpi"><div class="kpi-num" id="kLeads">0</div><div class="kpi-txt">Prospectos en el CRM</div></div>
+      <div class="kpi"><div class="kpi-num" id="kFuera">0</div><div class="kpi-txt">Respuestas fuera de horario</div></div>
+      <div class="kpi"><div class="kpi-num" id="kCitas">0</div><div class="kpi-txt">Citas agendadas por la IA</div></div>
+      <div class="kpi"><div class="kpi-num" id="kSeguimientos">0</div><div class="kpi-txt">Seguimientos automáticos</div></div>
+    </div>
+
+    <div class="tarjeta panel">
+      <div class="pestanas" role="tablist" aria-label="Sistemas conectados">
+        <button type="button" role="tab" data-p="crm" aria-selected="true"><span class="icono sheets" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M2.5 6.5h11M2.5 10h11M6.5 6.5v7"/></svg></span>CRM<span class="punto" aria-hidden="true"></span></button>
+        <button type="button" role="tab" data-p="cal" aria-selected="false"><span class="icono cal" aria-hidden="true">31</span>Calendario<span class="punto" aria-hidden="true"></span></button>
+        <button type="button" role="tab" data-p="act" aria-selected="false"><span class="icono rayo" aria-hidden="true"><svg viewBox="0 0 16 16" fill="#60A5FA"><path d="M9 1 3 9h4l-1 6 6-8H8z"/></svg></span>Actividad<span class="punto" aria-hidden="true"></span></button>
+        <span class="sub" id="panelSub"></span>
+      </div>
+      <div class="vista" data-v="crm" role="tabpanel">
+        <div class="tabla-wrap">
+          <table class="tabla">
+            <thead>
+              <tr><th>Cliente</th><th>WhatsApp</th><th>Negocio</th><th>Interés</th><th>Correo</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="crm"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="vista" data-v="cal" role="tabpanel" hidden><div id="calendario" class="calendario"></div></div>
+      <div class="vista" data-v="act" role="tabpanel" hidden><div id="actividad" class="actividad"></div></div>
+    </div>
+
+    <div class="cta">
+      <div class="cta-txt">
+        <b>¿Quieres esto en el WhatsApp de tu negocio?</b>
+        <span>Lo configuramos con tus servicios, precios y agenda en 5 días hábiles.</span>
+      </div>
+      <a class="wa-link" id="ctaWA" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.8 11.9 11.9 0 0 0 4.6 4c1.7.7 2.3.8 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.4-.3z"/></svg>Escríbenos por WhatsApp</a>
+      <span class="num" id="ctaNumero">+57 314 751 8988</span>
+      <span class="sub">Datos de ejemplo. Lo que escribas solo se guarda en tu navegador.</span>
+    </div>
+  </section>
+</main>
+
+<footer class="pie gutter">
+  <span><b>Vaniet IA</b> · Infraestructura e Inteligencia Artificial de Alto Impacto</span>
+  <span>Engineered for the Next Era of Intelligence · Medellín, Colombia · <a href="/privacidad">Privacidad</a> · <a href="/terminos">Términos</a></span>
+</footer>
+
+<div class="intro" id="intro" hidden role="dialog" aria-modal="true" aria-labelledby="introTitulo">
+  <div class="intro-caja">
+    <div class="intro-marca">
+      <svg class="logo" aria-hidden="true"><use href="#logo-vaniet"/></svg>
+      <div class="intro-saludo" id="introSaludo">Demo interactiva</div>
+    </div>
+    <h2 id="introTitulo">Mira a 3 agentes de IA vender por tu negocio, y pruébalos tú mismo</h2>
+    <ol>
+      <li><span class="n">01</span><span><b>Mira la historia.</b> Un cliente escribe a las 10:40 p.m. En 36 horas termina con una cita agendada, sin que nadie de tu equipo toque el celular.</span></li>
+      <li><span class="n">02</span><span><b>Escribe cuando quieras.</b> Eres un cliente más: tu chat entra a la misma línea de tiempo y los agentes te atienden de verdad.</span></li>
+      <li><span class="n">03</span><span><b>Mueve el tiempo.</b> Pide un precio, no respondas y adelanta al día siguiente: el asistente te hará seguimiento solo.</span></li>
+    </ol>
+    <div class="intro-botones">
+      <button type="button" class="principal" id="introVer">▶ Ver la historia (2 min)</button>
+      <button type="button" class="secundario" id="introProbar">Probarlo yo primero</button>
+    </div>
+    <p class="intro-nota">Datos de ejemplo: no escribas información sensible. Lo que escribas se guarda solo en este navegador.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   CONFIGURACIÓN DEL NEGOCIO (lo único que cambia de un cliente a otro)
+   ===================================================================== */
+const NEGOCIO = {
+  nombre: "Vaniet IA",
+  eslogan: "Infraestructura e Inteligencia Artificial de Alto Impacto",
+  asistente: "Sofía",
+  telefonoWhatsApp: "+57 314 751 8988",
+  moneda: "COP",
+};
+const SERVICIOS = [
+  { id: "agente-base", nombre: "Plan Agente Base", precio: 1200000, tipo: "pago único",
+    incluye: ["Agente de IA que atiende tu WhatsApp 24/7", "Responde preguntas frecuentes, precios y servicios", "Captura nombre, correo e interés de cada cliente en un CRM (Google Sheets)", "Entrega en 5 días hábiles"] },
+  { id: "full-automatizacion", nombre: "Plan Full Automatización", precio: 2200000, tipo: "pago único",
+    incluye: ["Todo lo del Plan Agente Base", "Agendamiento automático de citas en Google Calendar con enlace de Meet", "Seguimiento automático a clientes que cotizaron y no respondieron", "Capacitación al equipo de ventas"] },
+  { id: "mantenimiento", nombre: "Mantenimiento y Servidor", precio: 250000, tipo: "mensual",
+    incluye: ["Hosting del sistema", "Soporte ante caídas", "Ajustes de respuestas y prompts"] },
+];
+const FAQ = [
+  ["¿Funciona con mi número actual?", "Sí, se conecta a tu WhatsApp Business actual o a uno nuevo."],
+  ["¿Sirve para mi tipo de negocio?", "Sí: clínicas, academias, inmobiliarias, turismo, e-commerce y servicios en general."],
+  ["¿Necesito saber programar?", "No. Nosotros lo configuramos y te entregamos todo funcionando."],
+  ["¿Qué pasa si el bot no sabe algo?", "Transfiere la conversación a una persona de tu equipo."],
+  ["¿Cómo se paga?", "50% al iniciar y 50% al entregar. Transferencia, Nequi o tarjeta."],
+];
+const AGENDA = { tituloCita: "Diagnóstico gratuito de automatización", duracionMin: 30, horaInicio: 9, horaFin: 17, diasAOfrecer: 3, offset: -5 };
+const HORARIO_EQUIPO = { desde: 8, hasta: 18 }; // lunes a viernes
+const SEGUIMIENTO = { horasDesdeCotizacion: 24, hora: 10 };
+
+const AGENTE_1 = "Agente 1 · Vendedor";
+const AGENTE_2 = "Agente 2 · Agendador";
+const AGENTE_3 = "Agente 3 · Seguimiento";
+
+/* =====================================================================
+   RECORRIDO GUIADO: la historia de un cliente en ~36 horas.
+   t = minutos desde el inicio (10:30 p.m. del día 1). El Agente 3 corre
+   solo cada día a las 10:00 a.m., igual que en producción.
+   ===================================================================== */
+const TEL_HISTORIA = "+57 312 555 0303";
+// La historia se adapta al sector del prospecto: tudominio/?negocio=gimnasio#nombre-cliente
+const SECTORES = {
+  clinica: { nombre: "Carolina Méndez", pn: "Carolina", lo: "la", tengo: "una clínica dental", de: "clínica", correo: "carolina@clinicasonrie.com", sug: "Tengo una clínica dental y pierdo pacientes porque no respondo de noche" },
+  gimnasio: { nombre: "Camilo Restrepo", pn: "Camilo", lo: "lo", tengo: "un gimnasio", de: "gimnasio", correo: "camilo@gimnasiofuerza.com", sug: "Tengo un gimnasio y pierdo inscripciones porque no respondo de noche" },
+  inmobiliaria: { nombre: "Camila Ortiz", pn: "Camila", lo: "la", tengo: "una inmobiliaria", de: "inmobiliaria", correo: "camila@hogarprime.com", sug: "Tengo una inmobiliaria y pierdo clientes porque no respondo de noche" },
+};
+const PARAMS = new URLSearchParams(location.search);
+const S = SECTORES[PARAMS.get("negocio")] || SECTORES.clinica;
+const HISTORIA = [
+  { t: 10, tel: TEL_HISTORIA, texto: `Hola, buenas noches. Tengo ${S.tengo} y quiero saber cómo funciona esto` },
+  { t: 12, tel: TEL_HISTORIA, texto: `Me llamo ${S.nombre}` },
+  { t: 14, tel: TEL_HISTORIA, texto: "¿Cuánto cuesta?" },
+  { t: 16, tel: TEL_HISTORIA, texto: "Déjame lo pienso y te aviso" },
+  { t: 2148, tel: TEL_HISTORIA, texto: "Hola Sofía, sí me interesa. ¿Podemos agendar?" },
+  { t: 2150, tel: TEL_HISTORIA, texto: "La opción 1" },
+  { t: 2151, tel: TEL_HISTORIA, texto: S.correo },
+];
+const FIN_HISTORIA = 2154;
+const NARRATIVA = [
+  { t: 0, agente: "a0", etiqueta: "Inicio", titulo: "Son las 10:30 p.m. y tu negocio ya cerró",
+    texto: "Tu equipo descansa. Los mensajes de esta hora suelen esperar hasta mañana, cuando el cliente ya le escribió a otro.",
+    beneficio: "Presiona ▶ para ver la historia, o escribe tú cuando quieras." },
+  { t: 10, agente: "a1", etiqueta: "Agente 1 · Vendedor", titulo: "Llega un cliente nuevo de noche",
+    texto: `${S.pn} tiene ${S.tengo} y escribe a las 10:40 p.m. Sofía responde en segundos y lo guarda en el CRM como cliente calificado.`,
+    beneficio: "Respuesta en 5 segundos, a cualquier hora." },
+  { t: 12, agente: "a1", etiqueta: "Agente 1 · Vendedor", titulo: "Los datos se guardan solos",
+    texto: `${S.pn} dice su nombre mientras conversa y queda en tu Google Sheets. Nadie llenó un formulario.`,
+    beneficio: "Tu base de clientes se construye sola." },
+  { t: 14, agente: "a1", etiqueta: "Agente 1 · Vendedor", titulo: "Cotización al instante",
+    texto: `Sofía muestra tus planes y recomienda el adecuado. El CRM marca a ${S.pn} como Cotizado, con fecha y hora.`,
+    beneficio: "Ninguna cotización se queda sin registrar." },
+  { t: 16, agente: "a0", etiqueta: "El momento crítico", titulo: "El cliente dice “lo pienso”",
+    texto: "Aquí se pierden la mayoría de las ventas: el cliente se enfría y nadie vuelve a escribirle. Avanza para ver la mañana siguiente.",
+    beneficio: "Lo que pasa después es lo que cierra ventas." },
+  { t: 690, agente: "a3", etiqueta: "Agente 3 · Seguimiento", titulo: "10:00 a.m.: revisión automática del CRM",
+    texto: `El Agente 3 busca a quien cotizó hace más de 24 horas y no respondió. Andrés cumple y recibe un mensaje; ${S.pn} cotizó hace solo 11 horas, así que todavía no.`,
+    beneficio: "Seguimiento constante, solo en días y horas permitidos por la ley (nunca domingos ni festivos)." },
+  { t: 2130, agente: "a3", etiqueta: "Agente 3 · Seguimiento", titulo: `Día 3: seguimiento a ${S.pn}`,
+    texto: `Pasaron más de 24 horas. El Agente 3 le escribe por su nombre, le recuerda su propuesta para ${S.tengo} y ${S.lo} invita a un diagnóstico gratuito.`,
+    beneficio: "Recuperas ventas que hoy se pierden por olvido." },
+  { t: 2148, agente: "a2", etiqueta: "Agente 2 · Agendador", titulo: "La venta revive",
+    texto: `${S.pn} responde y pide una cita. El Agente 2 revisa tu Google Calendar y le ofrece solo 2 horarios libres.`,
+    beneficio: "Sin ir y venir de mensajes para cuadrar una hora." },
+  { t: 2150, agente: "a2", etiqueta: "Agente 2 · Agendador", titulo: "Solo falta un dato",
+    texto: `${S.pn} elige la primera opción. Como ya conoce su nombre, el asistente solo le pide el correo.`,
+    beneficio: "Pide únicamente lo que falta." },
+  { t: 2151, agente: "a2", etiqueta: "Agente 2 · Agendador", titulo: "Cita agendada sin intervención humana",
+    texto: `Se crea el evento con enlace de Meet y ${S.pn} recibe la confirmación por WhatsApp. En el CRM pasa a Agendado.`,
+    beneficio: "Llegas a la reunión con el cliente ya calificado." },
+  { t: FIN_HISTORIA, agente: "fin", etiqueta: "Resultado", titulo: "", texto: "", beneficio: "", resumen: true },
+];
+
+/* =====================================================================
+   BASE SIMULADA: se reconstruye para cualquier punto de la línea de tiempo
+   ===================================================================== */
+const HORA = 3600 * 1000, MIN = 60000;
+let db;
+let reloj = new Date();
+const ahora = () => reloj;
+
+function formatoLocal(fecha, conHora = true) {
+  const o = { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long" };
+  if (conHora) Object.assign(o, { hour: "numeric", minute: "2-digit" });
+  return new Date(fecha).toLocaleString("es-CO", o);
+}
+function partesLocales(fecha) {
+  const l = new Date(new Date(fecha).getTime() + AGENDA.offset * HORA);
+  return { h: l.getUTCHours(), m: l.getUTCMinutes(), dow: l.getUTCDay() };
+}
+function instanteLocal(base, hora, minuto = 0) {
+  const off = AGENDA.offset;
+  const l = new Date(new Date(base).getTime() + off * HORA);
+  return new Date(Date.UTC(l.getUTCFullYear(), l.getUTCMonth(), l.getUTCDate(), hora - off, minuto));
+}
+function fueraDeHorario(fecha) {
+  const { h, dow } = partesLocales(fecha);
+  return dow === 0 || dow === 6 || h < HORARIO_EQUIPO.desde || h >= HORARIO_EQUIPO.hasta;
+}
+// Ley 2300 de 2023: no se escribe proactivamente en domingos ni festivos (Ley Emiliani + Semana Santa)
+const DIA_MS = 24 * HORA;
+function pascuaMs(anio) {
+  const a = anio % 19, b = Math.floor(anio / 100), c = anio % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return Date.UTC(anio, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1);
+}
+const alLunesMs = (ms) => ms + ((8 - new Date(ms).getUTCDay()) % 7) * DIA_MS;
+const cacheFestivos = {};
+function festivosCO(anio) {
+  if (cacheFestivos[anio]) return cacheFestivos[anio];
+  const p = pascuaMs(anio);
+  const fechas = [[0, 1], [4, 1], [6, 20], [7, 7], [11, 8], [11, 25]].map(([m, d]) => Date.UTC(anio, m, d))
+    .concat([[0, 6], [2, 19], [5, 29], [7, 15], [9, 12], [10, 1], [10, 11]].map(([m, d]) => alLunesMs(Date.UTC(anio, m, d))))
+    .concat([p - 3 * DIA_MS, p - 2 * DIA_MS, p + 43 * DIA_MS, p + 64 * DIA_MS, p + 71 * DIA_MS]);
+  return (cacheFestivos[anio] = new Set(fechas.map((ms) => new Date(ms).toISOString().slice(0, 10))));
+}
+function esDiaDeContacto(fecha) {
+  const l = new Date(new Date(fecha).getTime() + AGENDA.offset * HORA);
+  return l.getUTCDay() !== 0 && !festivosCO(l.getUTCFullYear()).has(l.toISOString().slice(0, 10));
+}
+const AVISO_IA = "_Soy un asistente de IA. Al continuar autorizas el tratamiento de tus datos personales según nuestra política de privacidad. Escribe BAJA si no quieres recibir más mensajes._";
+function hash(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return h >>> 0; }
+
+const buscarLead = (tel) => db.leads.find((l) => l.telefono === tel);
+function upsertLead(tel, cambios) {
+  let lead = buscarLead(tel);
+  if (!lead) {
+    lead = { telefono: tel, nombre: "", correo: "", negocio: "", servicio: "", estado: "Nuevo", creado: ahora().toISOString(), cotizadoEn: null, seguimientoEn: null, notas: "" };
+    db.leads.push(lead);
+  }
+  for (const [k, v] of Object.entries(cambios)) if (v !== undefined && v !== null && v !== "") lead[k] = v;
+  lead.actualizado = ahora().toISOString();
+  return lead;
+}
+
+function horariosDisponibles() {
+  const libres = [];
+  const ocupado = (ini) => db.eventos.some((e) => {
+    const fin = ini.getTime() + AGENDA.duracionMin * MIN;
+    return ini.getTime() < new Date(e.fin).getTime() && fin > new Date(e.inicio).getTime();
+  });
+  let dia = new Date(ahora().getTime());
+  let habiles = 0;
+  while (habiles < AGENDA.diasAOfrecer) {
+    dia = new Date(dia.getTime() + 24 * HORA);
+    const { dow } = partesLocales(dia);
+    if (dow === 0 || dow === 6) continue;
+    habiles++;
+    for (let h = AGENDA.horaInicio; h < AGENDA.horaFin; h++) {
+      const ini = instanteLocal(dia, h);
+      if (!ocupado(ini)) libres.push(ini.toISOString());
+    }
+  }
+  return libres;
+}
+
+function crearEvento({ inicio, invitado, correo, telefono }) {
+  const ini = new Date(inicio);
+  if (isNaN(ini)) throw new Error("Fecha inválida");
+  if (!horariosDisponibles().includes(ini.toISOString())) throw new Error("Ese horario ya no está disponible");
+  // Enlace de Meet estable para que la línea de tiempo muestre siempre el mismo
+  let x = hash(telefono + ini.toISOString());
+  const letra = () => { x = Math.imul(x ^ (x >>> 15), 2246822507) >>> 0; return "abcdefghijkmnopqrstuvwxyz"[x % 25]; };
+  const bloque = (n) => Array.from({ length: n }, letra).join("");
+  const ev = {
+    id: "ev_" + hash(telefono + inicio).toString(36), titulo: AGENDA.tituloCita,
+    inicio: ini.toISOString(), fin: new Date(ini.getTime() + AGENDA.duracionMin * MIN).toISOString(),
+    invitado, correo, telefono, meet: `https://meet.google.com/${bloque(3)}-${bloque(4)}-${bloque(3)}`, creadoPor: AGENTE_2,
+  };
+  db.eventos.push(ev);
+  return ev;
+}
+
+function conversacion(tel) {
+  if (!db.conversaciones[tel]) db.conversaciones[tel] = { mensajes: [], demo: {} };
+  return db.conversaciones[tel];
+}
+function agregarMensaje(tel, de, texto, extra = {}) {
+  conversacion(tel).mensajes.push({ de, texto, ts: ahora().toISOString(), ...extra });
+}
+function registrar(agente, texto, tipo = "info") {
+  db.actividad.push({ ts: ahora().toISOString(), agente, texto, tipo });
+}
+
+function semilla(t0) {
+  const t = new Date(t0).getTime();
+  const s = { leads: [], eventos: [], conversaciones: {}, actividad: [] };
+  const manana = new Date(t + 24 * HORA), pasado = new Date(t + 48 * HORA);
+  s.eventos.push(
+    { id: "ev_seed1", titulo: AGENDA.tituloCita, inicio: instanteLocal(manana, 10).toISOString(), fin: instanteLocal(manana, 10, 30).toISOString(),
+      invitado: "Laura Gómez · Clínica Veterinaria Huellitas", correo: "laura@ejemplo.com", telefono: "+57 310 555 0101", meet: "https://meet.google.com/abc-defg-hij", creadoPor: AGENTE_2 },
+    { id: "ev_seed2", titulo: "Reunión interna de equipo", inicio: instanteLocal(pasado, 14).toISOString(), fin: instanteLocal(pasado, 15).toISOString(),
+      invitado: "Equipo Vaniet IA", correo: "", telefono: "", meet: "", creadoPor: "Manual" },
+  );
+  s.leads.push(
+    { telefono: "+57 310 555 0101", nombre: "Laura Gómez", correo: "laura@ejemplo.com", negocio: "Clínica Veterinaria Huellitas", servicio: "Plan Full Automatización", estado: "Agendado",
+      creado: new Date(t - 50 * HORA).toISOString(), actualizado: new Date(t - 49 * HORA).toISOString(), cotizadoEn: new Date(t - 50 * HORA).toISOString(), seguimientoEn: null, notas: "Pierde citas por no responder de noche" },
+    { telefono: "+57 315 555 0202", nombre: "Andrés Rojas", correo: "andres@ejemplo.com", negocio: "Academia de Inglés FastTalk", servicio: "Plan Agente Base", estado: "Cotizado",
+      creado: new Date(t - 30 * HORA).toISOString(), actualizado: new Date(t - 30 * HORA).toISOString(), cotizadoEn: new Date(t - 30 * HORA).toISOString(), seguimientoEn: null, notas: "Recibe ~80 mensajes diarios de interesados" },
+  );
+  const chat = [
+    ["cliente", "Hola, tengo una academia de inglés y no doy abasto con los mensajes. ¿Cuánto cuesta el bot?"],
+    ["bot", "¡Hola Andrés! 😊 El Plan Agente Base cuesta $1.200.000 COP (pago único) y atiende tu WhatsApp 24/7, responde dudas y guarda cada interesado en tu CRM. ¿Te gustaría agendar un diagnóstico gratuito de 30 minutos?"],
+    ["cliente", "Déjame lo pienso y te aviso"],
+    ["bot", "¡Claro que sí! Aquí estaré cuando lo necesites. 🙌"],
+  ];
+  s.conversaciones["+57 315 555 0202"] = { demo: {}, mensajes: chat.map(([de, texto], i) => ({ de, texto, ts: new Date(t - 30 * HORA + i * MIN).toISOString(), previo: true })) };
+  s.actividad.push({ ts: new Date(t).toISOString(), agente: "Sistema", texto: "CRM con 2 prospectos anteriores y calendario con 2 eventos.", tipo: "info" });
+  return s;
+}
+
+/* =====================================================================
+   HERRAMIENTAS que usan los agentes (en producción: Sheets y Calendar)
+   ===================================================================== */
+function ejecutar(nombre, input, tel) {
+  input = input && typeof input === "object" ? input : {};
+  switch (nombre) {
+    case "registrar_lead": {
+      const c = {};
+      for (const k of ["nombre", "correo", "negocio", "servicio", "notas", "estado"]) if (typeof input[k] === "string") c[k] = input[k].slice(0, 120);
+      if (c.estado && !["Nuevo", "Calificado"].includes(c.estado)) delete c.estado;
+      const actual = buscarLead(tel);
+      if (actual && ["Cotizado", "Agendado", "Escalado", "Seguimiento"].includes(actual.estado)) delete c.estado;
+      const lead = upsertLead(tel, c);
+      registrar(AGENTE_1, `CRM actualizado (${Object.keys(c).join(", ") || "sin cambios"}) → ${lead.nombre || tel}`, "crm");
+      return { ok: true, lead };
+    }
+    case "registrar_cotizacion": {
+      const servicio = String(input.servicio || "");
+      const actual = buscarLead(tel);
+      const c = { servicio, cotizadoEn: ahora().toISOString() };
+      if (!actual || !["Agendado", "Escalado"].includes(actual.estado)) c.estado = "Cotizado";
+      const lead = upsertLead(tel, c);
+      registrar(AGENTE_1, `Cotización enviada: ${servicio} → ${lead.nombre || tel}`, "crm");
+      return { ok: true };
+    }
+    case "consultar_disponibilidad": {
+      const libres = horariosDisponibles();
+      registrar(AGENTE_2, `Consultó Google Calendar: ${libres.length} horarios libres en los próximos ${AGENDA.diasAOfrecer} días hábiles`, "calendario");
+      return { horarios: libres.map((iso) => ({ inicio: iso, legible: formatoLocal(iso) })), instruccion: "Ofrece solo 2 opciones al cliente, en días distintos si es posible." };
+    }
+    case "agendar_cita": {
+      try {
+        const ev = crearEvento({ inicio: String(input.inicio), invitado: String(input.nombre || ""), correo: String(input.correo || ""), telefono: tel });
+        upsertLead(tel, { nombre: String(input.nombre || ""), correo: String(input.correo || ""), estado: "Agendado" });
+        registrar(AGENTE_2, `Cita creada en Google Calendar: ${formatoLocal(ev.inicio)} · ${input.nombre}`, "calendario");
+        return { ok: true, cuando: formatoLocal(ev.inicio), duracionMin: AGENDA.duracionMin, meet: ev.meet };
+      } catch (e) {
+        registrar(AGENTE_2, `No se pudo agendar: ${e.message}`, "error");
+        return { ok: false, error: e.message };
+      }
+    }
+    case "escalar_a_humano": {
+      const lead = upsertLead(tel, { estado: "Escalado", notas: String(input.motivo || "").slice(0, 120) });
+      registrar(AGENTE_1, `Conversación escalada a un asesor humano: ${input.motivo} (${lead.nombre || tel})`, "alerta");
+      return { ok: true, mensaje: "Un asesor fue notificado y responderá pronto." };
+    }
+  }
+  return { ok: false, error: "Herramienta desconocida" };
+}
+
+/* =====================================================================
+   MODO GUION: los agentes con reglas (instantáneo, sin cuenta)
+   ===================================================================== */
+const pesos = (n) => "$" + n.toLocaleString("es-CO");
+const plan = (id) => SERVICIOS.find((s) => s.id === id);
+const normal = (t) => t.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const capital = (t) => t.split(/\s+/).map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(" ");
+const tiene = (t, ps) => ps.some((p) => t.includes(p));
+const CON_CITAS = ["clinica", "odonto", "dental", "consultorio", "spa", "veterinaria", "inmobiliaria", "academia", "gimnasio", "salon", "barberia", "medic"];
+const TIPOS_NEGOCIO = [
+  [["dental", "odonto"], "Clínica odontológica"],
+  [["veterinari"], "Veterinaria"],
+  [["clinica", "consultorio", "medic", "ips"], "Clínica / consultorio"],
+  [["spa", "estetica", "salon", "barberia", "peluqueria"], "Spa / estética"],
+  [["inmobiliaria", "finca raiz", "arriendo"], "Inmobiliaria"],
+  [["academia", "colegio", "instituto", "cursos", "idiomas", "ingles"], "Academia / educación"],
+  [["gimnasio", "gym", "crossfit"], "Gimnasio"],
+  [["restaurante", "comidas", "cafeteria", "pizzeria"], "Restaurante"],
+  [["hotel", "hostal", "turismo", "agencia de viajes", "tours"], "Turismo / hotel"],
+  [["tienda", "ecommerce", "e-commerce", "tienda online", "almacen", "ropa"], "Tienda / e-commerce"],
+  [["taller", "repuestos"], "Taller"],
+];
+
+const PIDE_PRECIO = ["precio", "cuanto", "cuesta", "valor", "plan", "cotiz", "tarifa", "costo", "vale"];
+const AFIRMA = /\b(si|dale|claro|listo|me interesa|de una|ok|bueno)\b/;
+const RESPUESTAS_FAQ = [
+  [["mi numero", "numero actual", "mismo numero", "whatsapp business"], 0],
+  [["sirve para", "funciona para", "que negocios"], 1],
+  [["programar", "saber de tecnologia", "es dificil", "complicado"], 2],
+  [["no sabe", "no entiende", "se equivoca"], 3],
+  [["como se paga", "como pago", "forma de pago", "formas de pago", "nequi", "tarjeta", "cuotas"], 4],
+];
+
+function extraerNombre(texto) {
+  const m = texto.match(/(?:me llamo|mi nombre es|soy)\s+([\p{L}]+(?:\s+[\p{L}]+)?)/iu);
+  if (!m) return null;
+  const veto = ["de", "del", "el", "la", "un", "una", "dueno", "duena", "gerente", "y", "muy", "nuevo", "nueva"];
+  const ps = m[1].split(/\s+/);
+  if (veto.includes(normal(ps[0]))) return null;
+  return capital(ps.filter((p) => !veto.includes(normal(p))).join(" "));
+}
+function extraerNegocio(texto) {
+  const t = normal(texto);
+  const tipo = TIPOS_NEGOCIO.find(([cs]) => cs.some((c) => new RegExp(`(^|[^a-z])${c}`).test(t)));
+  return tipo ? tipo[1] : null;
+}
+function elegirHorario(t, slots) {
+  if (!slots?.length) return null;
+  if (/\b(1|uno|primer[ao]?)\b/.test(t)) return slots[0];
+  if (/\b(2|dos|segund[ao])\b/.test(t)) return slots[1];
+  for (const s of slots) {
+    const d = normal(formatoLocal(s)).split(/[ ,]/)[0];
+    if (["lunes", "martes", "miercoles", "jueves", "viernes"].includes(d) && t.includes(d)) return s;
+  }
+  return null;
+}
+function ofrecerHorarios(tel, demo) {
+  const libres = ejecutar("consultar_disponibilidad", {}, tel).horarios;
+  if (!libres.length) return "En este momento no tengo espacios libres en los próximos días 😕 Te paso con un asesor para buscar otra fecha.";
+  const p = libres[0];
+  const dP = formatoLocal(p.inicio, false);
+  const s = libres.find((h) => formatoLocal(h.inicio, false) !== dP && new Date(h.inicio).getUTCHours() !== new Date(p.inicio).getUTCHours()) || libres[1];
+  demo.slots = [p.inicio, s.inicio];
+  return `¡Perfecto! 📅 Tengo estos espacios para el *${AGENDA.tituloCita}* (${AGENDA.duracionMin} min por Google Meet):\n\n1️⃣ ${p.legible}\n2️⃣ ${s.legible}\n\n¿Cuál te queda mejor?`;
+}
+function intentarAgendar(tel, demo) {
+  const lead = buscarLead(tel) || {};
+  if (!lead.nombre) { demo.esperando = "nombre"; return "¡Listo, te aparto ese espacio! ¿A nombre de quién agendo la reunión? 😊"; }
+  if (!lead.correo) { demo.esperando = "correo"; return `¡Listo, ${lead.nombre.split(" ")[0]}! ¿A qué correo te envío la invitación con el enlace de Meet? 📧`; }
+  const r = ejecutar("agendar_cita", { inicio: demo.slotElegido, nombre: lead.nombre, correo: lead.correo }, tel);
+  demo.slots = null; demo.slotElegido = null; demo.esperando = null;
+  if (!r.ok) return `Uy, ese horario se acaba de ocupar 😅 ${ofrecerHorarios(tel, demo)}`;
+  return `✅ ¡Agendado, ${lead.nombre.split(" ")[0]}!\n\n🗓️ ${r.cuando}\n⏱️ ${r.duracionMin} minutos\n🔗 ${r.meet}\n\nTe llegará la invitación a ${lead.correo}. ¡Nos vemos!`;
+}
+
+function responderGuion(tel, texto) {
+  const demo = conversacion(tel).demo;
+  const t = normal(texto);
+  const primerMensaje = !buscarLead(tel);
+  if (/^\s*(baja|stop)\s*[.!]?\s*$/.test(t)) {
+    upsertLead(tel, { consentimiento: false });
+    registrar("Sistema", `Baja solicitada por ${buscarLead(tel)?.nombre || tel}: no recibirá seguimientos`, "alerta");
+    return "Listo, no te escribiremos más mensajes. Si cambias de opinión, escríbenos cuando quieras 🙌";
+  }
+
+  const datos = {};
+  const correo = texto.match(/[\w.+-]+@[\w-]+\.[\w.]+/)?.[0];
+  if (correo) datos.correo = correo.toLowerCase();
+  let nombre = extraerNombre(texto);
+  if (!nombre && demo.esperando === "nombre" && texto.trim().split(/\s+/).length <= 4 && !correo) nombre = capital(texto.trim().replace(/[.!]/g, ""));
+  if (nombre) datos.nombre = nombre;
+  const neg = extraerNegocio(correo ? texto.replace(correo, " ") : texto);
+  if (neg) {
+    datos.negocio = neg; datos.estado = "Calificado";
+    if (tiene(t, ["no doy abasto", "no alcanzo", "muchos mensajes", "no respondo", "pierdo", "perdemos", "de noche"])) datos.notas = "Pierde clientes por no responder a tiempo";
+  }
+  if (Object.keys(datos).length) ejecutar("registrar_lead", datos, tel);
+  else if (primerMensaje) upsertLead(tel, {});
+
+  const actual = buscarLead(tel);
+  const pn = actual.nombre ? actual.nombre.split(" ")[0] : "";
+
+  if (demo.slotElegido && ((demo.esperando === "nombre" && nombre) || (demo.esperando === "correo" && correo))) return intentarAgendar(tel, demo);
+  if (demo.esperando === "correo" && !correo) return "Para enviarte la invitación necesito un correo válido, por ejemplo nombre@empresa.com 🙏";
+
+  if (tiene(t, ["asesor", "humano", "una persona", "alguien real", "hablar con alguien"])) {
+    ejecutar("escalar_a_humano", { motivo: "El cliente pidió hablar con un asesor" }, tel);
+    return `¡Claro${pn ? ", " + pn : ""}! 🙌 Ya le avisé a un asesor de nuestro equipo y te escribirá en unos minutos por este mismo chat.`;
+  }
+  const preguntaAnterior = demo.pregunta;
+  demo.pregunta = null;
+  // Cierra cada respuesta informativa con el siguiente paso de la venta
+  const siguiente = () => {
+    if (actual.cotizadoEn) return `¿Agendamos un diagnóstico gratuito de ${AGENDA.duracionMin} min para verlo en tu negocio?`;
+    demo.pregunta = "precios";
+    return "¿Quieres conocer los precios?";
+  };
+
+  const elegido = elegirHorario(t, demo.slots);
+  if (elegido) { demo.slotElegido = elegido; return intentarAgendar(tel, demo); }
+  if (tiene(t, ["agendar", "agenda", "cita", "reunion", "llamada", "diagnostico", "disponib", "horario", "reunirnos", "videollamada", "meet"])) return ofrecerHorarios(tel, demo);
+  if (tiene(t, ["demora", "tarda", "cuanto tiempo", "cuando estaria", "entrega"]))
+    return `Lo entregamos funcionando en *5 días hábiles* ⚡ Nosotros lo configuramos con tus servicios, precios y horarios. ${siguiente()}`;
+  if (tiene(t, PIDE_PRECIO) || (preguntaAnterior === "precios" && AFIRMA.test(t) && !actual.cotizadoEn)) {
+    const conCitas = actual.negocio && CON_CITAS.some((n) => normal(actual.negocio).includes(n));
+    const rec = plan(conCitas ? "full-automatizacion" : "agente-base");
+    ejecutar("registrar_cotizacion", { servicio: rec.nombre }, tel);
+    const b = plan("agente-base"), f = plan("full-automatizacion"), m = plan("mantenimiento");
+    return `Con gusto${pn ? ", " + pn : ""} 💡 Estos son nuestros planes:\n\n- *${b.nombre}*: ${pesos(b.precio)} (pago único). Bot 24/7 en WhatsApp + CRM.\n- *${f.nombre}*: ${pesos(f.precio)} (pago único). Además agenda citas solo y hace seguimiento automático.\n- *${m.nombre}*: ${pesos(m.precio)}/mes.\n\nPara tu caso te recomiendo el *${rec.nombre}*. ¿Te gustaría un diagnóstico gratuito de ${AGENDA.duracionMin} min para verlo aplicado a tu negocio?`;
+  }
+  if (tiene(t, ["lo pienso", "lo voy a pensar", "te aviso", "luego te escribo", "mas tarde"])) {
+    return `¡Claro${pn ? ", " + pn : ""}! Tómate tu tiempo 🙌 Te dejo la propuesta guardada y aquí estaré 24/7 si te surge alguna duda.`;
+  }
+  if (!demo.slots && AFIRMA.test(t) && actual.cotizadoEn) return ofrecerHorarios(tel, demo);
+  if (neg) return `¡Qué bien! 🙌 En un negocio de tipo *${neg.toLowerCase()}* el asistente responde a tus clientes al instante, registra a cada interesado y agenda citas sin que estés pendiente del celular. ${actual.nombre ? siguiente() : "¿Me compartes tu nombre?"}`;
+  if (nombre && actual.negocio) return `¡Mucho gusto, ${pn}! 😊 Ya guardé tus datos. ¿Quieres que te cuente cuánto cuesta o prefieres agendar un diagnóstico gratuito?`;
+  if (correo || nombre) return `¡Gracias${pn ? ", " + pn : ""}! Ya guardé tus datos 📝 ¿Qué tipo de negocio tienes?`;
+  const faq = RESPUESTAS_FAQ.find(([ps]) => tiene(t, ps));
+  if (faq) return `${FAQ[faq[1]][1]} ${siguiente()}`;
+  if (tiene(t, ["como funciona", "que hace", "en que consiste"]))
+    return `Funciona con 3 agentes que trabajan juntos 🤖\n\n1️⃣ *Vendedor:* responde al instante, 24/7, y guarda a cada cliente en tu CRM.\n2️⃣ *Agendador:* ofrece horarios libres y crea la cita en tu Google Calendar.\n3️⃣ *Seguimiento:* le vuelve a escribir a quien cotizó y no respondió.\n\n${siguiente()}`;
+  if (tiene(t, ["gracias", "perfecto", "excelente", "genial"])) return "¡Con mucho gusto! 😊 Si tienes cualquier otra pregunta, aquí estoy 24/7.";
+  if (tiene(t, ["hola", "buenas", "buenos dias", "buen dia", "info", "informacion"]) || primerMensaje)
+    return `¡Hola${pn ? " " + pn : ""}! 👋 Soy ${NEGOCIO.asistente}, asistente virtual de *${NEGOCIO.nombre}*. Ayudamos a negocios a atender por WhatsApp 24/7 con IA, agendar citas solos y no perder clientes. ¿Qué tipo de negocio tienes?`;
+  if (!actual.cotizadoEn) demo.pregunta = "precios";
+  return "Te cuento: creamos asistentes de IA que atienden tu WhatsApp 24/7, registran a cada cliente en tu CRM y agendan citas solos 🤖 ¿Quieres conocer los precios o prefieres agendar un diagnóstico gratuito?";
+}
+function seguimientoGuion(lead) {
+  const n = lead.nombre ? lead.nombre.split(" ")[0] : "";
+  const neg = lead.negocio ? ` para *${lead.negocio}*` : "";
+  return `¡Hola${n ? " " + n : ""}! 👋 Soy ${NEGOCIO.asistente} de ${NEGOCIO.nombre}. Hace poco te compartí la propuesta del *${lead.servicio || "asistente de IA"}*${neg}. ¿Te quedó alguna duda? Si quieres, te muestro cómo funcionaría en un diagnóstico gratuito de ${AGENDA.duracionMin} min 😊`;
+}
+
+/* =====================================================================
+   MODO IA REAL: Claude con las mismas herramientas (solo con sesión de Claude)
+   ===================================================================== */
+let sample = null;
+
+const REGLAS = `Eres "${NEGOCIO.asistente}", la asistente virtual de ventas de ${NEGOCIO.nombre} (${NEGOCIO.eslogan}). Atiendes por WhatsApp a dueños de negocio interesados en automatizar su atención con IA. Esta es una demostración comercial: el cliente de este chat es un prospecto que prueba el servicio.
+
+Estilo: como en WhatsApp, cálido, natural y breve (máximo 2 a 3 oraciones). Emojis con moderación. Sin títulos ni tablas; puedes usar *negritas* de WhatsApp y listas cortas con guiones al mostrar planes. Una sola pregunta a la vez.
+
+Objetivo: entender el negocio y la necesidad del cliente, recomendar el plan adecuado y llevarlo a agendar un diagnóstico gratuito de ${AGENDA.duracionMin} minutos por Google Meet. Recopila de forma natural: nombre, tipo de negocio, necesidad principal y correo.
+
+Reglas:
+1. Cada vez que el cliente comparta un dato nuevo, guárdalo con registrar_lead.
+2. Cuando compartas precios, llama registrar_cotizacion con el plan recomendado.
+3. Si quiere agendar o hablar con alguien, llama consultar_disponibilidad y ofrece exactamente 2 opciones. Antes de agendar necesitas nombre y correo. Al confirmar, llama agendar_cita y envía fecha, hora y el enlace de Meet que devuelva la herramienta.
+4. Nunca inventes precios, horarios, enlaces ni servicios. Si no sabes algo o el cliente pide una persona, usa escalar_a_humano.
+5. No pidas datos sensibles (contraseñas, documentos, tarjetas).
+6. Tu respuesta final es SOLO el mensaje de WhatsApp para el cliente. No narres lo que haces con las herramientas.
+
+Servicios y precios (${NEGOCIO.moneda}):
+${SERVICIOS.map((s) => `- ${s.nombre}: ${pesos(s.precio)} (${s.tipo}). Incluye: ${s.incluye.join("; ")}.`).join("\n")}
+
+Preguntas frecuentes:
+${FAQ.map(([p, r]) => `- ${p} ${r}`).join("\n")}
+
+Cada mensaje del cliente llega con un bloque [Contexto] con la fecha actual y lo que ya sabemos en el CRM: úsalo, pero no lo menciones.`;
+
+function herramientasIA(tel, grabadas) {
+  const def = (name, description, properties = {}, required = []) => ({
+    name, description, inputSchema: { type: "object", properties, required },
+    execute: (input) => { grabadas.push({ name, input }); return ejecutar(name, input, tel); },
+  });
+  return [
+    def("registrar_lead", "Guarda o actualiza datos del cliente en el CRM (Google Sheets). Envía solo los campos que conozcas. Devuelve el registro.", {
+      nombre: { type: "string" }, correo: { type: "string" }, negocio: { type: "string", description: "Nombre o tipo de negocio" },
+      servicio: { type: "string" }, notas: { type: "string", description: "Necesidad principal en una frase" },
+      estado: { type: "string", enum: ["Nuevo", "Calificado"], description: "Calificado cuando ya se conoce su negocio y necesidad" },
+    }),
+    def("registrar_cotizacion", "Marca en el CRM que al cliente se le dio el precio de un plan. Úsala al compartir precios.", {
+      servicio: { type: "string", enum: SERVICIOS.map((s) => s.nombre) },
+    }, ["servicio"]),
+    def("consultar_disponibilidad", `Devuelve los horarios libres en Google Calendar de los próximos ${AGENDA.diasAOfrecer} días hábiles para el diagnóstico de ${AGENDA.duracionMin} min.`),
+    def("agendar_cita", "Crea la cita en Google Calendar con enlace de Meet. Solo cuando el cliente eligió un horario ofrecido y ya tienes nombre y correo. Devuelve fecha legible y enlace.", {
+      inicio: { type: "string", description: "El campo 'inicio' exacto que devolvió consultar_disponibilidad" },
+      nombre: { type: "string" }, correo: { type: "string" },
+    }, ["inicio", "nombre", "correo"]),
+    def("escalar_a_humano", "Avisa a un asesor humano para que tome la conversación. Úsala si el cliente lo pide o pregunta algo fuera de tu información.", {
+      motivo: { type: "string" },
+    }, ["motivo"]),
+  ];
+}
+
+function contexto(tel) {
+  const l = buscarLead(tel);
+  const d = l ? `nombre=${l.nombre || "?"}; correo=${l.correo || "?"}; negocio=${l.negocio || "?"}; servicio=${l.servicio || "?"}; estado=${l.estado}` : "cliente nuevo, sin datos";
+  return `[Contexto] Ahora: ${formatoLocal(ahora())}. Teléfono: ${tel}. CRM: ${d}.`;
+}
+
+async function responderIA(tel, grabadas) {
+  if (!buscarLead(tel)) upsertLead(tel, {});
+  const msgs = conversacion(tel).mensajes.slice(-16);
+  while (msgs.length && msgs[0].de !== "cliente") msgs.shift();
+  const turnos = msgs.map((m) => ({ role: m.de === "cliente" ? "user" : "assistant", content: m.texto }));
+  turnos[turnos.length - 1].content = `${contexto(tel)}\n\n${turnos[turnos.length - 1].content}`;
+  const { text } = await sample([{ role: "user", content: REGLAS }, ...turnos], { tools: herramientasIA(tel, grabadas), modelTier: "quick" });
+  return text.trim();
+}
+
+/* =====================================================================
+   LÍNEA DE TIEMPO: el estado en cualquier minuto = semilla + eventos hasta ese minuto.
+   La historia de Carolina y el chat del visitante viven en la MISMA línea de tiempo:
+   el visitante escribe cuando quiera y los agentes lo atienden junto a los demás.
+   ===================================================================== */
+const TOKEN = (location.hash || "").replace(/^#/, "").replace(/[^\w.~-]/g, "").slice(0, 60);
+const CLAVE = "vaniet-demo:v1:" + (TOKEN || "general");
+const NOMBRE_CLIENTE = TOKEN ? capital(TOKEN.replace(/[-_.~]+/g, " ").trim()) : "";
+
+// Métricas de uso anónimas (sin contenido de mensajes ni datos personales): saber a qué prospecto
+// vale la pena escribirle. Solo se envían desde el sitio publicado (https), una vez por evento y visita.
+const ENVIA_EVENTOS = location.protocol === "https:" && !/claude/i.test(location.hostname);
+const eventosEnviados = new Set();
+function evento(nombre) {
+  if (!ENVIA_EVENTOS || eventosEnviados.has(nombre)) return;
+  eventosEnviados.add(nombre);
+  try {
+    fetch("/api/evento", {
+      method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ e: nombre, c: TOKEN || "general", s: new URLSearchParams(location.search).get("negocio") || "clinica" }),
+    }).catch(() => {});
+  } catch {}
+}
+function inicioDemo() {
+  let base = Date.now();
+  for (let i = 0; i < 10; i++) {
+    const t0 = instanteLocal(base, 22, 30).getTime();
+    if ([1, 2].every((k) => esDiaDeContacto(instanteLocal(t0 + k * DIA_MS, 10).getTime()))) return t0;
+    base += DIA_MS;
+  }
+  return instanteLocal(Date.now(), 22, 30).getTime();
+}
+const T0 = inicioDemo();
+const MAX_T = 5040; // hasta el día 5, 10:30 a.m.: deja espacio para probar el seguimiento después de la historia
+const PARTE_HISTORIA = 0.76; // fracción de la barra que ocupa el recorrido
+
+let prueba = cargarPrueba();
+const TU = () => prueba.tel;
+const app = { t: 0, ia: false, reproduciendo: false, ultimoTel: TEL_HISTORIA, telVista: null, enviando: false, vivo: null, pestana: "crm" };
+
+function cargarPrueba() {
+  try {
+    const d = JSON.parse(localStorage.getItem(CLAVE) || "null");
+    if (d && Array.isArray(d.eventos) && d.tel) return d;
+  } catch {}
+  return { eventos: [], tel: nuevoTelefono(), t: 0, intro: false };
+}
+function guardarPrueba() { try { localStorage.setItem(CLAVE, JSON.stringify(prueba)); } catch {} }
+
+// Posición en la barra ↔ minutos. Los pasos del recorrido quedan a la misma distancia
+// (la noche y las horas sin actividad se comprimen); después de la historia la escala es lineal.
+const ESCALA = 1000;
+function anclas() {
+  const n = NARRATIVA.length - 1;
+  return [...NARRATIVA.map((p, i) => [(i / n) * PARTE_HISTORIA * ESCALA, p.t]), [ESCALA, MAX_T]];
+}
+function interpolar(x, pares, de, a) {
+  for (let i = 1; i < pares.length; i++) {
+    const p = pares[i - 1], q = pares[i];
+    if (x <= q[de] || i === pares.length - 1) {
+      if (q[de] === p[de]) return q[a];
+      const f = Math.max(0, Math.min(1, (x - p[de]) / (q[de] - p[de])));
+      return p[a] + (q[a] - p[a]) * f;
+    }
+  }
+  return pares[0][a];
+}
+const posDeMin = (m) => interpolar(m, anclas(), 1, 0);
+const minDePos = (p) => interpolar(p, anclas(), 0, 1);
+
+// Cada día a las 10:00 a.m. corre el Agente 3 (como un cron en producción)
+function cronsHasta(minutos) {
+  const lista = [];
+  let c = instanteLocal(T0, SEGUIMIENTO.hora).getTime();
+  if (c <= T0) c += 24 * HORA;
+  for (; c <= T0 + minutos * MIN; c += 24 * HORA) if (esDiaDeContacto(c)) lista.push({ t: (c - T0) / MIN, tipo: "cron" });
+  return lista;
+}
+
+function aplicar(ev) {
+  reloj = new Date(T0 + ev.t * MIN);
+  const antes = db.actividad.length;
+  if (ev.tipo === "cron") {
+    const limite = reloj.getTime() - SEGUIMIENTO.horasDesdeCotizacion * HORA;
+    const pendientes = db.leads.filter((l) => l.estado === "Cotizado" && l.cotizadoEn && new Date(l.cotizadoEn).getTime() <= limite && !l.seguimientoEn && l.consentimiento !== false);
+    registrar(AGENTE_3, `Revisión de las 10:00 a.m. (día hábil, Ley 2300): ${pendientes.length} prospecto(s) cotizados hace más de ${SEGUIMIENTO.horasDesdeCotizacion} h sin respuesta`, "cron");
+    for (const lead of pendientes) {
+      agregarMensaje(lead.telefono, "bot", seguimientoGuion(lead), { seguimiento: true });
+      upsertLead(lead.telefono, { estado: "Seguimiento", seguimientoEn: ahora().toISOString() });
+      registrar(AGENTE_3, `Seguimiento enviado por WhatsApp a ${lead.nombre || lead.telefono}`, "whatsapp");
+      app.ultimoTel = lead.telefono;
+    }
+    if (pendientes.some((l) => l.telefono === TU())) {
+      app.ultimoTel = TU();
+      app.vivo = { t: ev.t, tipo: "seguimiento", acciones: db.actividad.slice(antes) };
+    }
+    return;
+  }
+  const esPrimero = !buscarLead(ev.tel);
+  agregarMensaje(ev.tel, "cliente", ev.texto);
+  registrar(AGENTE_1, `Mensaje recibido de ${buscarLead(ev.tel)?.nombre || ev.tel}`, "whatsapp");
+  let respuesta;
+  if (ev.ia) {
+    for (const h of ev.herramientas || []) ejecutar(h.name, h.input, ev.tel);
+    respuesta = ev.respuesta;
+  } else {
+    respuesta = responderGuion(ev.tel, ev.texto);
+  }
+  if (esPrimero) respuesta += `\n\n${AVISO_IA}`;
+  reloj = new Date(reloj.getTime() + 5000); // responde en 5 segundos
+  agregarMensaje(ev.tel, "bot", respuesta, ev.ia ? { ia: true } : {});
+  app.ultimoTel = ev.tel;
+  if (ev.tel === TU()) app.vivo = { t: ev.t, tipo: "mensaje", texto: ev.texto, acciones: db.actividad.slice(antes) };
+}
+
+function reconstruir(minutos) {
+  db = semilla(T0);
+  app.ultimoTel = TEL_HISTORIA;
+  app.vivo = null;
+  const lista = [...HISTORIA, ...prueba.eventos].filter((e) => e.t <= minutos).concat(cronsHasta(minutos))
+    .sort((a, c) => a.t - c.t || (a.tipo === "cron" ? -1 : c.tipo === "cron" ? 1 : 0));
+  for (const ev of lista) aplicar(ev);
+  reloj = new Date(T0 + minutos * MIN);
+}
+
+/* =====================================================================
+   INTERFAZ
+   ===================================================================== */
+const $ = (id) => document.getElementById(id);
+const TZ = "America/Bogota";
+const hora = (iso) => new Date(iso).toLocaleTimeString("es-CO", { timeZone: TZ, hour: "numeric", minute: "2-digit" });
+const dia = (iso) => new Date(iso).toLocaleDateString("es-CO", { timeZone: TZ, weekday: "long", day: "numeric", month: "long" });
+const diaCorto = (iso) => new Date(iso).toLocaleDateString("es-CO", { timeZone: TZ, weekday: "short", day: "numeric" });
+const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const claseAgente = (a) => (a.startsWith("Agente 1") ? "a1" : a.startsWith("Agente 2") ? "a2" : a.startsWith("Agente 3") ? "a3" : "sis");
+const recorte = (t, n) => (t.length > n ? t.slice(0, n - 1) + "…" : t);
+function formatoWA(texto) {
+  return esc(texto)
+    .replace(/(https?:\/\/[^\s<]+)/g, '<span class="meet">$1</span>')
+    .replace(/\*([^*\n]+)\*/g, "<b>$1</b>")
+    .replace(/(^|\s)_([^_\n]+)_(?=\s|$)/g, "$1<i>$2</i>")
+    .replace(/\n/g, "<br>");
+}
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("ver");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove("ver"), 4200);
+}
+function nuevoTelefono() {
+  const n = () => Math.floor(Math.random() * 10);
+  return `+57 3${n()}${n()} ${n()}${n()}${n()} ${n()}${n()}${n()}${n()}`;
+}
+const telActual = () => app.telVista || app.ultimoTel;
+
+const vistos = { leads: new Map(), eventos: new Set(), actividad: "", nActividad: 0, mensajes: 0, chat: "", chatClave: "", misiones: 0, sugerencias: "", primera: true };
+function reiniciarVistos() {
+  vistos.leads.clear(); vistos.eventos.clear();
+  Object.assign(vistos, { actividad: "", mensajes: 0, chat: "", chatClave: "", misiones: 0, sugerencias: "", primera: true });
+}
+
+function irA(minutos, { animarCambios = true } = {}) {
+  app.t = Math.max(0, Math.min(MAX_T, Math.round(minutos)));
+  prueba.t = app.t;
+  guardarPrueba();
+  reconstruir(app.t);
+  if (!animarCambios) reiniciarVistos();
+  pintar();
+}
+
+function pintar() {
+  pintarLinea(); pintarRelato(); pintarChats(); pintarChat(); pintarSugerencias(); pintarMisiones();
+  pintarKpis(); pintarCrm(); pintarCalendario(); pintarActividad(); pintarPestanas();
+  vistos.primera = false;
+}
+
+/* ---------- Panel con pestañas: sigue al agente que acaba de actuar ---------- */
+const SUB_PESTANA = { crm: "Google Sheets · se llena solo", cal: "Google Calendar · próximas citas", act: "Registro en vivo de los 3 agentes" };
+const avisos = new Set();
+function verPestana(p) {
+  app.pestana = p;
+  avisos.delete(p);
+  pintarPestanas();
+}
+function pintarPestanas() {
+  for (const b of document.querySelectorAll(".pestanas [data-p]")) {
+    b.setAttribute("aria-selected", String(b.dataset.p === app.pestana));
+    b.classList.toggle("aviso", avisos.has(b.dataset.p));
+  }
+  for (const v of document.querySelectorAll(".vista")) v.hidden = v.dataset.v !== app.pestana;
+  $("panelSub").textContent = SUB_PESTANA[app.pestana];
+}
+// Llamada cuando aparecen acciones nuevas: Agente 2 → calendario, Agente 3 → actividad, Agente 1 → CRM
+function seguirAgente(nuevas) {
+  const cambios = new Set(nuevas.map((a) => (a.agente.startsWith("Agente 2") ? "cal" : a.agente.startsWith("Agente 3") ? "act" : "crm")));
+  cambios.add("act");
+  const ultima = nuevas[nuevas.length - 1];
+  const destino = ultima.agente.startsWith("Agente 2") || nuevas.some((a) => a.texto.startsWith("Cita creada")) ? "cal"
+    : ultima.agente.startsWith("Agente 3") ? "act" : "crm";
+  for (const c of cambios) if (c !== destino) avisos.add(c);
+  verPestana(destino);
+}
+
+function pintarLinea() {
+  const r = $("tiempo");
+  r.max = ESCALA;
+  r.value = posDeMin(app.t);
+  r.style.setProperty("--avance", (posDeMin(app.t) / ESCALA) * 100 + "%");
+  r.setAttribute("aria-valuetext", formatoLocal(ahora()));
+  $("relojHora").textContent = hora(ahora());
+  $("relojDia").textContent = dia(ahora());
+  const fuera = fueraDeHorario(ahora());
+  const eq = $("equipo");
+  eq.className = "equipo " + (fuera ? "fuera" : "dentro");
+  eq.textContent = fuera ? "Tu equipo: fuera de horario" : "Tu equipo: en horario";
+  $("btnPlay").textContent = app.reproduciendo ? "❚❚" : "▶";
+  $("btnPlay").setAttribute("aria-label", app.reproduciendo ? "Pausar" : "Reproducir la historia");
+  const i = pasoActual();
+  $("btnAnterior").disabled = app.t === 0;
+  $("btnSiguiente").disabled = i >= NARRATIVA.length - 1;
+  $("tlAyuda").innerHTML = `<span class="k-verde">●</span> Tus mensajes &nbsp;·&nbsp; <span class="k-naranja">3</span> Seguimiento automático 10:00 a.m. (día hábil) &nbsp;·&nbsp; Arrastra para mover el tiempo`;
+}
+
+function pintarMarcas() {
+  const pos = (t) => `${(posDeMin(t) / ESCALA) * 100}%`;
+  let html = "";
+  NARRATIVA.forEach((n, i) => {
+    const txt = n.agente === "a1" ? "1" : n.agente === "a2" ? "2" : n.agente === "a3" ? "3" : n.agente === "fin" ? "✓" : "•";
+    html += `<button type="button" class="marca-t ${n.agente}" data-paso="${i}" style="left:${pos(n.t)}" title="${esc(n.titulo || n.etiqueta)}" aria-label="Ir a: ${esc(n.titulo || n.etiqueta)}">${txt}</button>`;
+  });
+  for (const c of cronsHasta(MAX_T)) if (c.t > FIN_HISTORIA)
+    html += `<button type="button" class="marca-t a3 cron" data-t="${c.t}" style="left:${pos(c.t)}" title="Seguimiento automático 10:00 a.m." aria-label="Ir al seguimiento automático de las 10:00 a.m.">3</button>`;
+  for (const e of prueba.eventos)
+    html += `<button type="button" class="marca-t u" data-t="${e.t}" data-tu="1" style="left:${pos(e.t)}" title="Tu mensaje: ${esc(e.texto)}" aria-label="Ir a tu mensaje"></button>`;
+  $("marcas").innerHTML = html;
+  // Medianoche de cada día; en la parte comprimida se omiten las etiquetas que quedarían encimadas
+  let dias = "", previa = -100;
+  for (let d = instanteLocal(T0, 0).getTime() + 24 * HORA; d < T0 + MAX_T * MIN; d += 24 * HORA) {
+    const p = (posDeMin((d - T0) / MIN) / ESCALA) * 100;
+    if (p - previa < 12) continue;
+    previa = p;
+    dias += `<span class="dia-t" style="left:${p}%">${esc(diaCorto(d))}</span>`;
+  }
+  $("dias").innerHTML = dias;
+}
+
+function pasoActual() {
+  let i = 0;
+  NARRATIVA.forEach((n, k) => { if (n.t <= app.t) i = k; });
+  return i;
+}
+
+function proximoCron() {
+  const c = cronsHasta(MAX_T).find((x) => x.t > app.t);
+  return c ? formatoLocal(T0 + c.t * MIN) : null;
+}
+
+function pintarRelato() {
+  const el = $("relato");
+  const i = pasoActual();
+  const n = NARRATIVA[i];
+  for (const m of $("marcas").children) if (m.dataset.paso !== undefined) m.classList.toggle("pasada", Number(m.dataset.paso) < i);
+  const v = app.vivo;
+  // Si lo más reciente en la línea de tiempo es el chat del visitante, se explica eso
+  if (v && v.t >= n.t && app.t - v.t <= 90) { el.innerHTML = relatoVivo(v); return; }
+  if (n.resumen) {
+    evento("historia_completa");
+    const historia = Object.entries(db.conversaciones).filter(([tel]) => tel !== TU()).flatMap(([, c]) => c.mensajes).filter((m) => m.de === "bot" && !m.previo);
+    const fuera = historia.filter((m) => fueraDeHorario(m.ts)).length;
+    const seg = db.leads.filter((l) => l.seguimientoEn && l.telefono !== TU()).length;
+    const citas = db.eventos.filter((e) => e.creadoPor === AGENTE_2 && e.id !== "ev_seed1" && e.telefono !== TU()).length;
+    const tuyos = (db.conversaciones[TU()]?.mensajes || []).filter((m) => m.de === "bot").length;
+    const prox = app.t > FIN_HISTORIA + 1 ? proximoCron() : null;
+    el.innerHTML = `<div class="relato-cab"><span class="agente-pill fin">Resultado</span><span class="paso-n">Paso ${i + 1} de ${NARRATIVA.length}</span></div>
+      <h2>En 36 horas tu equipo no escribió un solo mensaje</h2>
+      <p>El asistente respondió ${historia.length} mensajes (${fuera} fuera de horario), hizo ${seg} seguimiento${seg === 1 ? "" : "s"} automático${seg === 1 ? "" : "s"} y dejó ${citas} cita${citas === 1 ? "" : "s"} nueva${citas === 1 ? "" : "s"} en tu calendario, con cada cliente registrado en tu CRM.</p>
+      ${tuyos ? `<p class="extra">Y además atendió tu prueba: ${tuyos} respuesta${tuyos === 1 ? "" : "s"} para ti.</p>` : ""}
+      ${prox ? `<p class="extra">El tiempo sigue corriendo. Próximo seguimiento automático: ${esc(prox)}.</p>` : ""}
+      <div class="beneficio"><b>Para tu negocio:</b> lo configuramos con tus servicios, precios y agenda en 5 días hábiles.</div><br>
+      <button type="button" class="cta-btn" id="ctaProbar">${tuyos ? "Sigue probando →" : "Pruébalo tú mismo →"}</button>`;
+    $("ctaProbar").addEventListener("click", probarYo);
+    return;
+  }
+  el.innerHTML = `<div class="relato-cab"><span class="agente-pill ${n.agente}">${esc(n.etiqueta)}</span><span class="paso-n">Paso ${i + 1} de ${NARRATIVA.length}</span></div>
+    <h2>${esc(n.titulo)}</h2><p>${esc(n.texto)}</p>
+    ${n.beneficio ? `<div class="beneficio"><b>${i === 0 ? "Cómo verlo:" : "Lo que gana tu negocio:"}</b> ${esc(n.beneficio)}</div>` : ""}`;
+}
+
+function relatoVivo(v) {
+  const acciones = v.acciones.map((a) => `<li class="${claseAgente(a.agente)}"><span class="ag">${esc(a.agente)}</span> · ${esc(a.texto)}</li>`).join("");
+  const todo = v.acciones.map((a) => a.texto).join(" ");
+  const cuando = T0 + v.t * MIN;
+  let titulo, texto, beneficio;
+  if (v.tipo === "seguimiento") {
+    titulo = "El Agente 3 te escribió a ti";
+    texto = `Cotizaste hace más de ${SEGUIMIENTO.horasDesdeCotizacion} horas y no respondiste, así que a las 10:00 a.m. el asistente te escribió solo, con tu nombre y el plan que te interesó. Respóndele en el WhatsApp.`;
+    beneficio = "Recuperas ventas que hoy se pierden por olvido.";
+  } else {
+    titulo = `Escribiste: “${recorte(v.texto, 70)}”`;
+    texto = "Esto hicieron los agentes detrás de tu mensaje, en 5 segundos:";
+    beneficio = todo.includes("Cita creada") ? "La cita quedó en el calendario, con el cliente registrado y calificado."
+      : todo.includes("Cotización") ? "La cotización quedó registrada con fecha y hora: nadie la olvida."
+      : todo.includes("escalada") ? "Tu equipo solo entra cuando de verdad hace falta."
+      : todo.includes("CRM actualizado") ? "Tus clientes quedan en el CRM sin que nadie copie nada a mano."
+      : fueraDeHorario(cuando) ? "Respondió fuera de horario, cuando tu equipo no está."
+      : "Respuesta en 5 segundos, a cualquier hora.";
+  }
+  return `<div class="relato-cab"><span class="agente-pill vivo">● En vivo · Tu prueba</span><span class="paso-n">${esc(formatoLocal(cuando))}</span></div>
+    <h2>${esc(titulo)}</h2><p>${esc(texto)}</p><ul class="acciones">${acciones}</ul>
+    <div class="beneficio"><b>Lo que gana tu negocio:</b> ${esc(beneficio)}</div>`;
+}
+
+function pintarChats() {
+  const tu = TU();
+  const otros = [...new Set([...db.leads.map((l) => l.telefono), ...Object.keys(db.conversaciones)])]
+    .filter((tel) => tel !== tu && db.conversaciones[tel]?.mensajes.length);
+  const chip = (tel, etiqueta, clase = "") =>
+    `<button type="button" role="tab" class="chip ${clase}" data-tel="${esc(tel)}" aria-selected="${tel === telActual()}">${etiqueta}</button>`;
+  const html = `<span class="lbl etq">Chats de WhatsApp</span>` + chip(tu, "✍️ Tu chat", "tu") + otros.map((tel) => {
+    const l = buscarLead(tel);
+    return chip(tel, esc(l?.nombre || tel) + (tel === TEL_HISTORIA ? " <small>· historia</small>" : ""));
+  }).join("");
+  if (html !== vistos.chat) { $("chats").innerHTML = html; vistos.chat = html; }
+}
+
+function pintarChat() {
+  const tel = telActual();
+  const tuyo = tel === TU();
+  const msgs = db.conversaciones[tel]?.mensajes || [];
+  const nombre = buscarLead(tel)?.nombre || tel;
+  $("entrada").disabled = $("btnEnviar").disabled = app.enviando;
+  $("entrada").placeholder = tuyo ? "Escribe como si fueras un cliente…" : "Escribe aquí para probarlo tú";
+  $("form").classList.toggle("invita", !tuyo && !prueba.eventos.length);
+  $("notaIA").hidden = !app.ia;
+  $("waEstado").textContent = app.enviando && tuyo ? "escribiendo…" : tuyo ? "en línea · responde en segundos" : `viendo el chat de ${nombre}`;
+  const chat = $("chat");
+  const clave = tel + "|" + msgs.length + "|" + app.enviando;
+  if (!msgs.length && !app.enviando) {
+    chat.innerHTML = tuyo
+      ? `<div class="vacio-chat"><b>Tú eres el cliente.</b><br>Escríbele a ${esc(NEGOCIO.nombre)} o toca una sugerencia de abajo. La historia sigue corriendo a tu alrededor.</div>`
+      : `<div class="vacio-chat">Aún no ha escrito nadie.<br>Presiona ▶ o mueve la línea de tiempo para ver llegar el primer mensaje.</div>`;
+    vistos.mensajes = 0; vistos.chatClave = clave;
+    return;
+  }
+  if (clave === vistos.chatClave) return; // sin cambios: no se vuelve a pintar ni a animar
+  const mismoChat = vistos.chatClave?.startsWith(tel + "|");
+  const nuevasDesde = vistos.primera || !mismoChat ? msgs.length : Math.min(vistos.mensajes, msgs.length);
+  vistos.chatClave = clave;
+  let ultimo = "", html = "";
+  msgs.forEach((m, i) => {
+    const d = dia(m.ts);
+    if (d !== ultimo) { html += `<div class="dia-sep">${esc(d)}</div>`; ultimo = d; }
+    const c = m.de === "cliente" ? "cliente" : "bot";
+    const et = m.seguimiento ? `<span class="etiqueta">③ Seguimiento automático</span>` : m.ia ? `<span class="etiqueta ia">Respuesta de IA real</span>` : "";
+    html += `<div class="burbuja ${c}${m.seguimiento ? " seguimiento" : ""}${i >= nuevasDesde ? " nueva" : ""}"${i >= nuevasDesde ? ` style="animation-delay:${Math.min(700, (i - nuevasDesde) * 150)}ms"` : ""}>${et}${formatoWA(m.texto)}<span class="hora">${hora(m.ts)}${c === "cliente" ? " ✓✓" : ""}</span></div>`;
+  });
+  if (app.enviando && tuyo) html += `<div class="escribiendo" aria-label="Escribiendo"><span></span><span></span><span></span>${app.ia ? "&nbsp; pensando…" : ""}</div>`;
+  vistos.mensajes = msgs.length;
+  chat.innerHTML = html;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// Sugerencias según el punto de la conversación en que va el visitante
+function sugerenciasPara() {
+  const l = buscarLead(TU());
+  const demo = db.conversaciones[TU()]?.demo || {};
+  if (!l) return ["Hola, quiero información", S.sug, "¿Cómo funciona?"];
+  if (demo.esperando === "correo") return [`Mi correo es ${normal(l.nombre.split(" ")[0] || "carlos").replace(/[^a-z]/g, "")}@minegocio.com`];
+  if (demo.esperando === "nombre") return ["Carlos Pérez"];
+  if (demo.slots) return ["La opción 1", "La opción 2"];
+  const s = [];
+  if (!l.negocio) s.push("Tengo una academia de inglés y no doy abasto con los mensajes");
+  if (!l.nombre) s.push("Me llamo Carlos Pérez");
+  if (!l.cotizadoEn) s.push("¿Cuánto cuesta?");
+  else if (!["Agendado", "Escalado"].includes(l.estado)) s.push("Déjame lo pienso", "Sí, quiero agendar el diagnóstico");
+  s.push("¿Funciona con mi número actual?", "¿Cómo se paga?", "¿Cuánto se demoran en entregarlo?", "Quiero hablar con un asesor");
+  return s.slice(0, 3);
+}
+function pintarSugerencias() {
+  const lista = app.ia ? ["¿Qué incluye el plan full?", "Tengo una inmobiliaria con 5 asesores, ¿me sirve?", "¿Cuánto cuesta?"] : sugerenciasPara();
+  const firma = lista.join("|");
+  if (firma === vistos.sugerencias) return;
+  vistos.sugerencias = firma;
+  $("sugerencias").innerHTML = `<div class="titulo etq">Ideas para escribir</div>` + lista.map((s) => `<button type="button">${esc(s)}</button>`).join("");
+}
+
+/* ---------- Reto: probar los 3 agentes ---------- */
+const MISIONES = [
+  { ag: "a1", titulo: "Cuéntale qué negocio tienes", detalle: "El Agente 1 te califica y te guarda en el CRM.", hecha: (l) => !!l?.negocio },
+  { ag: "a1", titulo: "Pregunta cuánto cuesta", detalle: "Te cotiza con precios reales y el CRM te marca como Cotizado.", hecha: (l) => !!l?.cotizadoEn },
+  { ag: "a3", titulo: "No respondas y adelanta el tiempo", detalle: "A las 10:00 a.m., cuando pasen 24 h, el Agente 3 te escribe solo.", hecha: (l) => !!l?.seguimientoEn },
+  { ag: "a2", titulo: "Agenda tu diagnóstico", detalle: "El Agente 2 te ofrece 2 horarios y crea la cita con enlace de Meet.", hecha: () => db.eventos.some((e) => e.telefono === TU()) },
+];
+function cronDeSeguimiento(lead) {
+  const listo = new Date(lead.cotizadoEn).getTime() + SEGUIMIENTO.horasDesdeCotizacion * HORA;
+  return cronsHasta(MAX_T).find((c) => c.t > app.t && T0 + c.t * MIN >= listo);
+}
+function pintarMisiones() {
+  const l = buscarLead(TU());
+  const hechas = MISIONES.map((m) => m.hecha(l));
+  const n = hechas.filter(Boolean).length;
+  if (!vistos.primera && n > vistos.misiones) {
+    toast(n === MISIONES.length ? "🎉 Probaste los 3 agentes. Imagina esto atendiendo a tus clientes." : `✅ Reto ${hechas.lastIndexOf(true) + 1} completado`);
+  }
+  vistos.misiones = n;
+  if (n === MISIONES.length) evento("reto_completo");
+  const sig = hechas.indexOf(false);
+  const items = MISIONES.map((m, i) => {
+    let extra = "";
+    if (i === 2 && !hechas[2] && hechas[1]) {
+      const c = l.estado === "Cotizado" ? cronDeSeguimiento(l) : null;
+      extra = c
+        ? `<button type="button" class="accion" data-ir="${c.t}">⏩ Adelantar a ${esc(diaCorto(T0 + c.t * MIN))}, 10:00 a.m.</button>`
+        : l.estado === "Cotizado" ? `<div class="md">Cotizaste muy cerca del final de la línea de tiempo. Usa ↺ Reiniciar para probarlo desde el inicio.</div>`
+        : `<div class="md">Solo aplica si no has agendado ni pedido un asesor. Usa ↺ Reiniciar para probarlo.</div>`;
+    }
+    // Solo el siguiente reto muestra su detalle: el resto queda en una línea
+    const abierta = i === sig || !!extra;
+    return `<div class="mision ${hechas[i] ? "hecha" : ""} ${abierta ? "" : "plegada"}"><span class="chk">${hechas[i] ? "✓" : ""}</span>
+      <div><div class="mt"><span class="ag-tag ${m.ag}">${m.ag.slice(1)}</span>${esc(m.titulo)}</div>${abierta && !hechas[i] ? `<div class="md">${esc(m.detalle)}</div>` : ""}${extra}</div></div>`;
+  }).join("");
+  $("misiones").innerHTML = `<div class="mis-cab"><b>Reto: prueba los 3 agentes</b><span class="mis-n">${n} de ${MISIONES.length}</span></div>
+    <div class="progreso"><span style="width:${(n / MISIONES.length) * 100}%"></span></div>${items}
+    ${n === MISIONES.length ? `<div class="mis-fin">🎉 <b>¡Lo lograste!</b> Esto mismo, con tus servicios, precios y agenda, queda funcionando en tu WhatsApp en 5 días hábiles. <a href="${esc(enlaceWA())}" target="_blank" rel="noopener">Hablemos por WhatsApp →</a></div>` : ""}`;
+}
+
+function animarNumero(id, v) {
+  const el = $(id);
+  if (el.textContent === String(v)) return;
+  el.textContent = v;
+  if (!vistos.primera) { el.classList.add("cambio"); setTimeout(() => el.classList.remove("cambio"), 1500); }
+}
+function pintarKpis() {
+  const bots = Object.values(db.conversaciones).flatMap((c) => c.mensajes).filter((m) => m.de === "bot" && !m.previo);
+  animarNumero("kLeads", db.leads.length);
+  animarNumero("kFuera", bots.filter((m) => fueraDeHorario(m.ts)).length);
+  animarNumero("kCitas", db.eventos.filter((e) => e.creadoPor === AGENTE_2).length);
+  animarNumero("kSeguimientos", db.leads.filter((x) => x.seguimientoEn).length);
+}
+function pintarCrm() {
+  const filas = [...db.leads].sort((a, b) => (b.actualizado || b.creado).localeCompare(a.actualizado || a.creado));
+  const celda = (v) => (v ? esc(v) : `<span class="vacio">—</span>`);
+  $("crm").innerHTML = filas.map((l) => {
+    const firma = l.actualizado || l.creado;
+    const cambio = !vistos.primera && vistos.leads.get(l.telefono) !== firma;
+    vistos.leads.set(l.telefono, firma);
+    const tu = l.telefono === TU() ? ` <small style="color:#047857;font-weight:700">(tú)</small>` : "";
+    return `<tr class="${l.telefono === telActual() ? "activa" : ""} ${cambio ? "flash" : ""}" data-tel="${esc(l.telefono)}">
+      <td class="nombre">${celda(l.nombre)}${tu}</td><td>${esc(l.telefono)}</td><td>${celda(l.negocio)}</td>
+      <td>${celda(l.servicio)}</td><td>${celda(l.correo)}</td>
+      <td><span class="estado ${esc(l.estado)}">${esc(l.estado === "Seguimiento" ? "Seguimiento enviado" : l.estado)}</span></td></tr>`;
+  }).join("") || `<tr><td colspan="6" class="vacio">Aún no hay prospectos</td></tr>`;
+}
+function pintarCalendario() {
+  const desde = ahora().getTime() - 12 * HORA;
+  const eventos = [...db.eventos].filter((e) => new Date(e.fin).getTime() >= desde).sort((a, b) => a.inicio.localeCompare(b.inicio));
+  let ultimo = "", html = "";
+  for (const e of eventos) {
+    const d = dia(e.inicio);
+    if (d !== ultimo) { html += `<div class="cal-dia">${esc(d)}</div>`; ultimo = d; }
+    const nuevo = !vistos.primera && !vistos.eventos.has(e.id);
+    vistos.eventos.add(e.id);
+    html += `<div class="evento ${e.creadoPor === "Manual" ? "interno" : ""} ${nuevo ? "nuevo" : ""}">
+      <div class="h">${hora(e.inicio)}</div>
+      <div><div class="t">${esc(e.titulo)}</div><div class="d">${esc(e.invitado)}${e.telefono === TU() ? " (tú)" : ""}${e.correo ? " · " + esc(e.correo) : ""}</div>
+      ${e.meet ? `<div class="meet">🎥 ${esc(e.meet.replace("https://", ""))}</div>` : ""}</div></div>`;
+  }
+  if (vistos.primera) db.eventos.forEach((e) => vistos.eventos.add(e.id));
+  $("calendario").innerHTML = html || `<div class="cal-dia">Sin citas próximas</div>`;
+}
+function pintarActividad() {
+  const n = db.actividad.length;
+  const firma = n + "|" + (db.actividad[n - 1]?.ts || "") + (db.actividad[n - 1]?.texto || "");
+  if (firma === vistos.actividad) return;
+  const nuevas = vistos.primera ? 0 : Math.max(0, n - vistos.nActividad);
+  vistos.actividad = firma; vistos.nActividad = n;
+  if (nuevas > 0) seguirAgente(db.actividad.slice(-nuevas));
+  $("actividad").innerHTML = [...db.actividad].reverse().map((a, i) => `
+    <div class="act ${claseAgente(a.agente)} ${a.tipo === "error" ? "error" : ""} ${i < nuevas ? "nueva" : ""}">
+      <div class="ts">${hora(a.ts)}</div><div><span class="ag">${esc(a.agente)}</span> · ${esc(a.texto)}</div></div>`).join("");
+}
+
+/* ---------- Reproducción del recorrido ---------- */
+let animacion = null;
+function detener() {
+  app.reproduciendo = false;
+  if (animacion) { clearTimeout(animacion.raf); clearTimeout(animacion.espera); animacion = null; }
+  pintarLinea();
+}
+function viajarA(destino, alTerminar) {
+  // Se anima en posición de la barra, no en minutos, para que el avance se vea parejo
+  const desde = posDeMin(app.t), hasta = posDeMin(destino);
+  const dur = hasta === desde ? 0 : Math.min(1400, 450 + Math.abs(hasta - desde) * 4);
+  const ini = performance.now();
+  const reducir = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const paso = (ahoraMs) => {
+    const p = dur && !reducir ? Math.min(1, (ahoraMs - ini) / dur) : 1;
+    const e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    app.telVista = null;
+    irA(p === 1 ? destino : minDePos(desde + (hasta - desde) * e));
+    if (p < 1) animacion.raf = setTimeout(() => paso(performance.now()), 16);
+    else alTerminar?.();
+  };
+  animacion = animacion || {};
+  animacion.raf = setTimeout(() => paso(performance.now()), 16);
+}
+function irAPaso(i, seguir = false) {
+  i = Math.max(0, Math.min(NARRATIVA.length - 1, i));
+  if (animacion) { clearTimeout(animacion.raf); clearTimeout(animacion.espera); }
+  animacion = {};
+  viajarA(NARRATIVA[i].t, () => {
+    if (!seguir || !app.reproduciendo) { animacion = null; return; }
+    if (i >= NARRATIVA.length - 1) { detener(); return; }
+    const n = NARRATIVA[i];
+    const lectura = Math.max(4500, Math.min(8500, (n.texto.length + n.beneficio.length) * 40));
+    animacion.espera = setTimeout(() => irAPaso(i + 1, true), lectura);
+  });
+}
+function reproducir() {
+  if (app.reproduciendo) { detener(); return; }
+  app.reproduciendo = true;
+  let i = pasoActual();
+  if (i >= NARRATIVA.length - 1) { i = 0; irA(0, { animarCambios: false }); }
+  pintarLinea();
+  irAPaso(i + 1, true);
+}
+function viajarYVer(t, tel) {
+  detener();
+  viajarA(t, () => { animacion = null; app.telVista = tel; pintar(); });
+}
+
+/* ---------- Chat en vivo: el visitante escribe en el punto actual de la línea de tiempo ---------- */
+async function enviar(texto) {
+  texto = texto.trim().slice(0, 1000);
+  if (!texto || app.enviando) return;
+  evento("escribio");
+  detener();
+  const tel = TU();
+  // Escribir en un punto anterior reescribe lo que el visitante había escrito después
+  if (prueba.eventos.some((e) => e.t > app.t)) {
+    prueba.eventos = prueba.eventos.filter((e) => e.t <= app.t);
+    toast("Volviste en el tiempo: tu chat sigue desde aquí con este mensaje nuevo.");
+  }
+  const ultimoT = prueba.eventos.reduce((m, e) => Math.max(m, e.t), -1);
+  const tMsg = Math.min(MAX_T, Math.max(app.t, ultimoT + 1));
+  app.enviando = true;
+  app.telVista = tel;
+  $("entrada").value = "";
+  irA(tMsg);
+  // Muestra el mensaje del cliente al instante mientras responde el agente
+  agregarMensaje(tel, "cliente", texto);
+  pintarChat();
+
+  let ev = { t: tMsg, tel, texto };
+  if (app.ia && sample) {
+    try {
+      const grabadas = [];
+      const respuesta = await responderIA(tel, grabadas);
+      ev = { t: tMsg, tel, texto, ia: true, herramientas: grabadas, respuesta };
+    } catch (e) {
+      if (!manejarErrorIA(e)) toast("La IA no respondió esta vez. Respondo con el guion.");
+    }
+  } else {
+    await new Promise((r) => setTimeout(r, 650 + Math.random() * 500));
+  }
+  prueba.eventos.push(ev);
+  app.enviando = false;
+  irA(tMsg);
+  pintarMarcas();
+  if (prueba.eventos.length === 1) toast("Tu chat ya está en la línea de tiempo (punto verde). Presiona ▶ o adelanta el tiempo y mira qué hacen los agentes contigo.");
+  $("entrada").focus({ preventScroll: true });
+}
+
+function manejarErrorIA(e) {
+  const permanentes = ["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "tools_unavailable"];
+  if (permanentes.includes(e?.code)) {
+    sample = null; ponerIA(false); $("modo").hidden = true;
+    toast("La IA real no está disponible en esta vista. El demo sigue en modo guion.");
+    return true;
+  }
+  if (e?.code === "rate_limited") { toast("Demasiadas consultas seguidas. Espera un momento e intenta de nuevo."); return true; }
+  return false;
+}
+function ponerIA(on) {
+  app.ia = on && !!sample;
+  $("modoGuion").setAttribute("aria-pressed", String(!app.ia));
+  $("modoIA").setAttribute("aria-pressed", String(app.ia));
+  pintarChat(); pintarSugerencias();
+}
+
+function probarYo() {
+  detener();
+  app.telVista = TU();
+  pintar();
+  if (matchMedia("(max-width: 1000px)").matches) document.querySelector(".col-telefono").scrollIntoView({ behavior: "smooth" });
+  $("entrada").focus({ preventScroll: true });
+}
+
+function enlaceWA() {
+  const texto = `Hola, vi el demo de ${NEGOCIO.nombre}${NOMBRE_CLIENTE ? ` (${NOMBRE_CLIENTE})` : ""} y quiero esto para mi negocio`;
+  return `https://wa.me/${NEGOCIO.telefonoWhatsApp.replace(/\D/g, "")}?text=${encodeURIComponent(texto)}`;
+}
+
+/* ---------- Bienvenida ---------- */
+function abrirIntro() {
+  detener();
+  $("intro").hidden = false;
+  $("introVer").focus();
+}
+function cerrarIntro() {
+  $("intro").hidden = true;
+  prueba.intro = true;
+  guardarPrueba();
+}
+
+/* ---------- Eventos ---------- */
+$("btnPlay").addEventListener("click", reproducir);
+$("btnAnterior").addEventListener("click", () => {
+  detener();
+  const i = pasoActual();
+  irAPaso(app.t > NARRATIVA[i].t ? i : i - 1);
+});
+$("btnSiguiente").addEventListener("click", () => { detener(); irAPaso(pasoActual() + 1); });
+$("tiempo").addEventListener("input", (e) => {
+  const pos = Number(e.target.value); // leer antes de detener(), que vuelve a pintar la barra
+  detener(); app.telVista = null; irA(minDePos(pos));
+});
+// Un enlace con otro #cliente es otra prueba: se recarga con sus propios datos
+addEventListener("hashchange", () => location.reload());
+$("marcas").addEventListener("click", (e) => {
+  const b = e.target.closest(".marca-t");
+  if (!b) return;
+  detener();
+  if (b.dataset.paso !== undefined) irAPaso(Number(b.dataset.paso));
+  else viajarYVer(Number(b.dataset.t), b.dataset.tu ? TU() : null);
+});
+$("form").addEventListener("submit", (e) => { e.preventDefault(); enviar($("entrada").value); });
+$("sugerencias").addEventListener("click", (e) => { if (e.target.tagName === "BUTTON") enviar(e.target.textContent); });
+$("chats").addEventListener("click", (e) => { const b = e.target.closest("[data-tel]"); if (b) { app.telVista = b.dataset.tel; pintar(); } });
+$("crm").addEventListener("click", (e) => { const f = e.target.closest("tr[data-tel]"); if (f) { app.telVista = f.dataset.tel; pintar(); } });
+$("misiones").addEventListener("click", (e) => { const b = e.target.closest("[data-ir]"); if (b) viajarYVer(Number(b.dataset.ir), TU()); });
+document.querySelector(".pestanas").addEventListener("click", (e) => { const b = e.target.closest("[data-p]"); if (b) verPestana(b.dataset.p); });
+$("ctaWA").addEventListener("click", () => evento("clic_whatsapp"));
+$("misiones").addEventListener("click", (e) => { if (e.target.closest("a")) evento("clic_whatsapp"); });
+$("modoGuion").addEventListener("click", () => ponerIA(false));
+$("modoIA").addEventListener("click", () => ponerIA(true));
+$("btnAyuda").addEventListener("click", abrirIntro);
+function ponerPresenta(on) {
+  document.body.classList.toggle("presenta", on);
+  $("btnPresenta").setAttribute("aria-pressed", String(on));
+  $("btnPresenta").textContent = on ? "Salir de presentación" : "Modo presentación";
+  const p = new URLSearchParams(location.search);
+  on ? p.set("presenta", "1") : p.delete("presenta");
+  try { history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : "") + location.hash); } catch {}
+}
+$("btnPresenta").addEventListener("click", () => ponerPresenta(!document.body.classList.contains("presenta")));
+$("introVer").addEventListener("click", () => { cerrarIntro(); app.telVista = null; reproducir(); });
+$("introProbar").addEventListener("click", () => { cerrarIntro(); probarYo(); });
+$("intro").addEventListener("click", (e) => { if (e.target.id === "intro") cerrarIntro(); });
+addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("intro").hidden) cerrarIntro(); });
+
+let confirmarReinicio = null;
+$("btnReiniciar").addEventListener("click", (e) => {
+  const b = e.currentTarget;
+  const volver = () => { detener(); app.telVista = null; pintarMarcas(); irA(0, { animarCambios: false }); };
+  if (!prueba.eventos.length) { volver(); return; }
+  if (!confirmarReinicio) {
+    b.textContent = "¿Borrar tu chat? Toca otra vez"; b.classList.add("peligro");
+    confirmarReinicio = setTimeout(() => { confirmarReinicio = null; b.textContent = "↺ Reiniciar"; b.classList.remove("peligro"); }, 3000);
+    return;
+  }
+  clearTimeout(confirmarReinicio); confirmarReinicio = null;
+  b.textContent = "↺ Reiniciar"; b.classList.remove("peligro");
+  prueba = { eventos: [], tel: nuevoTelefono(), t: 0, intro: true };
+  volver();
+  toast("Listo: la historia empieza de nuevo y tu chat quedó en blanco.");
+});
+
+/* ---------- Arranque ---------- */
+$("ctaNumero").textContent = NEGOCIO.telefonoWhatsApp;
+$("ctaWA").href = enlaceWA();
+if (NOMBRE_CLIENTE) {
+  $("marcaSub").innerHTML = `Demo preparada para <b>${esc(NOMBRE_CLIENTE)}</b>`;
+  $("introSaludo").textContent = `Demo preparada para ${NOMBRE_CLIENTE}`;
+}
+pintarMarcas();
+irA(prueba.eventos.length ? prueba.t : 0, { animarCambios: false });
+if (prueba.eventos.length) { app.telVista = TU(); pintar(); }
+evento("abrio");
+if (PARAMS.has("presenta")) ponerPresenta(true);
+else if (!prueba.intro) abrirIntro();
+
+// La IA real solo aparece si este visitante tiene sesión de Claude y puede usar herramientas
+(async () => {
+  try {
+    const s = await window.claude?.use?.("sample");
+    if (!s) return;
+    const lim = await s.limits().catch(() => null);
+    if (!lim?.tools) return;
+    sample = s;
+    $("modo").hidden = false;
+  } catch {}
+})();
+</script>
+
+</body>
+</html>

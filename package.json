@@ -1,0 +1,15 @@
+{
+  "name": "demo-agente-ventas-whatsapp",
+  "version": "1.0.0",
+  "description": "Demo: ecosistema de 3 agentes de IA (vendedor, agendador y seguimiento) sobre WhatsApp",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "test": "node --test test/cumplimiento.test.js test/ia-multi.test.js test/whatsapp.test.js",
+    "reset": "node -e \"require('fs').rmSync('data/db.json',{force:true})\""
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.0.0"
+  }
+}

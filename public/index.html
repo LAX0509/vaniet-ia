@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vaniet IA · Demo de agentes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="barra">
+    <div class="marca">
+      <div class="logo">N</div>
+      <div>
+        <div class="marca-nombre" id="marcaNombre">Vaniet IA</div>
+        <div class="marca-sub">Demo en vivo · Ecosistema de 3 agentes de IA</div>
+      </div>
+    </div>
+    <div class="agentes-leyenda">
+      <span class="chip a1">① Vendedor 24/7</span>
+      <span class="chip a2">② Agendador</span>
+      <span class="chip a3">③ Seguimiento</span>
+    </div>
+    <div class="controles">
+      <div class="reloj" title="Reloj simulado del demo">🕒 <span id="reloj">—</span></div>
+      <span class="modo" id="modo">—</span>
+      <button class="btn" id="btnReloj" title="Simula que pasa un día">⏩ +24 h</button>
+      <button class="btn primario" id="btnSeguimiento" title="Ejecuta el Agente 3 como si fueran las 10:00 a.m.">▶ Ejecutar seguimiento</button>
+      <button class="btn fantasma" id="btnReiniciar" title="Deja el demo como nuevo">↺</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Columna izquierda: el teléfono del cliente -->
+    <section class="col-telefono">
+      <div class="selector">
+        <label for="selChat">Chateando como:</label>
+        <select id="selChat"></select>
+        <button class="btn mini" id="btnNuevo">+ Cliente nuevo</button>
+      </div>
+
+      <div class="telefono">
+        <div class="wa-header">
+          <div class="wa-avatar">N</div>
+          <div>
+            <div class="wa-nombre" id="waNombre">Vaniet IA</div>
+            <div class="wa-estado" id="waEstado">en línea</div>
+          </div>
+          <div class="wa-iconos">📹 📞 ⋮</div>
+        </div>
+        <div class="wa-chat" id="chat"></div>
+        <form class="wa-input" id="form">
+          <input id="entrada" autocomplete="off" placeholder="Escribe un mensaje" />
+          <button type="submit" aria-label="Enviar">➤</button>
+        </form>
+      </div>
+
+      <div class="sugerencias" id="sugerencias"></div>
+    </section>
+
+    <!-- Columna derecha: lo que pasa "detrás" -->
+    <section class="col-panel">
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-num" id="kLeads">0</div><div class="kpi-txt">Prospectos en CRM</div></div>
+        <div class="kpi"><div class="kpi-num" id="kCotizados">0</div><div class="kpi-txt">Cotizaciones enviadas</div></div>
+        <div class="kpi"><div class="kpi-num" id="kCitas">0</div><div class="kpi-txt">Citas agendadas por IA</div></div>
+        <div class="kpi"><div class="kpi-num" id="kSeguimientos">0</div><div class="kpi-txt">Seguimientos automáticos</div></div>
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">
+          <span class="icono sheets">▦</span> CRM · Google Sheets
+          <span class="sub">Se llena solo mientras el cliente chatea</span>
+        </div>
+        <div class="tabla-wrap">
+          <table class="tabla">
+            <thead>
+              <tr><th>Cliente</th><th>WhatsApp</th><th>Negocio</th><th>Interés</th><th>Correo</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="crm"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dos-col">
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><span class="icono cal">31</span> Google Calendar <span class="sub">Próximas citas</span></div>
+          <div id="calendario" class="calendario"></div>
+        </div>
+        <div class="tarjeta">
+          <div class="tarjeta-titulo"><span class="icono rayo">⚡</span> Actividad de los agentes <span class="sub">En tiempo real</span></div>
+          <div id="actividad" class="actividad"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

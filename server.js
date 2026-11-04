@@ -7,6 +7,7 @@
 //   GET/POST /webhook/whatsapp → WhatsApp Business real (API oficial de Meta o un proveedor oficial)
 
 import http from "node:http";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -184,15 +185,36 @@ async function leerCuerpo(req) {
   return cuerpo ? JSON.parse(cuerpo) : {};
 }
 
+// Panel y /api/* muestran leads y chats reales: en un servidor público van detrás de ADMIN_TOKEN
+// (usuario cualquiera, contraseña = ADMIN_TOKEN). En producción sin ADMIN_TOKEN quedan cerrados.
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "";
+const PRODUCCION = process.env.NODE_ENV === "production";
+function autorizado(req) {
+  if (!ADMIN_TOKEN) return !PRODUCCION;
+  const [tipo, valor] = (req.headers.authorization || "").split(" ");
+  if (tipo !== "Basic" || !valor) return false;
+  const clave = Buffer.from(valor, "base64").toString().split(":").slice(1).join(":");
+  const a = Buffer.from(clave), b = Buffer.from(ADMIN_TOKEN);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+}
+// Con WhatsApp real conectado, reiniciar o adelantar el reloj tocaría datos de clientes reales
+const whatsappReal = () => wa.configurado() && !wa.simulado();
+
 const servidor = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   try {
-    if (req.method === "GET" && url.pathname === "/api/estado") return json(res, 200, estado());
-
     // Para el monitor de disponibilidad (Uptime Kuma, UptimeRobot) y el healthcheck del hosting
     if (req.method === "GET" && url.pathname === "/salud") {
       return json(res, 200, { ok: true, modo: modoIA ? "ia" : "demo", whatsapp: wa.configurado(), uptimeSeg: Math.round(process.uptime()) });
     }
+
+    if (url.pathname !== "/webhook/whatsapp" && !autorizado(req)) {
+      if (!ADMIN_TOKEN) return json(res, 403, { error: "Panel deshabilitado: define ADMIN_TOKEN" });
+      res.writeHead(401, { "WWW-Authenticate": 'Basic realm="Vaniet IA", charset="UTF-8"' });
+      return res.end("Se requiere autenticación");
+    }
+
+    if (req.method === "GET" && url.pathname === "/api/estado") return json(res, 200, estado());
 
     if (url.pathname === "/webhook/whatsapp") {
       if (req.method === "GET") {
@@ -225,6 +247,10 @@ const servidor = http.createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname === "/api/seguimiento") {
       const enviados = await ejecutarSeguimiento({ automatico: false });
       return json(res, 200, { enviados });
+    }
+
+    if (req.method === "POST" && (url.pathname === "/api/reloj" || url.pathname === "/api/reiniciar") && whatsappReal()) {
+      return json(res, 409, { error: "No disponible con WhatsApp real conectado" });
     }
 
     if (req.method === "POST" && url.pathname === "/api/reloj") {

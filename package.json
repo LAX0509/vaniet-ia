@@ -6,7 +6,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.js",
-    "test": "node --test test/cumplimiento.test.js test/ia-multi.test.js test/whatsapp.test.js",
+    "test": "node --test test/cumplimiento.test.js test/ia-multi.test.js test/whatsapp.test.js test/admin.test.js",
     "reset": "node -e \"require('fs').rmSync('data/db.json',{force:true})\""
   },
   "dependencies": {

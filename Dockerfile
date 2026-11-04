@@ -1,7 +1,8 @@
 # Imagen del servidor del bot (webhook de WhatsApp + agentes). Sirve en Railway, Render, Fly.io o un VPS.
 FROM node:22-alpine
 WORKDIR /app
-ENV NODE_ENV=production PORT=5000
+# Sin PORT fijo: el hosting lo inyecta (Railway usa 8080); en local server.js usa 5000
+ENV NODE_ENV=production
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY server.js ./
